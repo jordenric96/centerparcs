@@ -7,450 +7,702 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Spidey Lou">
-    <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
 
-    <title>Lou's Spidey Aftelkalender</title>
+    <title>Lou's Center Parcs Games</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;900&display=swap');
 
         :root {
             --red: #E23636;
             --blue: #013889;
-            --black: #1a1a1a;
             --gold: #FFD700;
+            --dark: #111;
         }
 
-        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--blue);
             font-family: 'Roboto', sans-serif;
             margin: 0; padding: 10px;
-            color: white;
-            text-align: center;
-            overflow-x: hidden;
-            padding-bottom: 80px;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
+            color: white; text-align: center;
+            overflow: hidden; /* Geen scrollbalken in de app */
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            height: 100vh; display: flex; flex-direction: column;
         }
 
         /* HEADER */
         h1 {
-            font-family: 'Bangers', cursive;
-            font-size: 2.5rem;
-            color: var(--red);
-            text-shadow: 2px 2px 0 #fff, 4px 4px 0 #000;
-            margin: 10px 0;
-            animation: bounce 2s infinite;
+            font-family: 'Bangers', cursive; font-size: 2.5rem; margin: 5px 0;
+            color: var(--red); text-shadow: 2px 2px 0 #fff; letter-spacing: 2px;
         }
-        .lou-name { color: var(--gold); text-decoration: underline; }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
+        .subtitle { font-size: 1rem; margin-bottom: 10px; color: #ccc; }
 
         /* KALENDER GRID */
+        #calendarContainer {
+            flex-grow: 1; overflow-y: auto; touch-action: pan-y; /* Hier wel scrollen */
+            padding-bottom: 50px;
+        }
+
         .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            max-width: 800px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 15px; max-width: 900px; margin: 0 auto; padding: 10px;
         }
 
         .day-card {
-            background: white;
-            border: 4px solid var(--black);
-            border-radius: 15px;
-            height: 110px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            color: var(--black);
-            box-shadow: 0 4px 0 var(--black);
+            background: white; border: 4px solid var(--dark); border-radius: 15px;
+            height: 110px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; position: relative;
+            color: var(--dark); box-shadow: 0 5px 0 var(--dark);
             transition: transform 0.1s;
         }
-
-        .day-card:active { transform: translateY(4px); box-shadow: none; }
-        .date-number { font-family: 'Bangers'; font-size: 2.5rem; line-height: 1; z-index: 2;}
-        .day-text { font-weight: bold; font-size: 0.8rem; z-index: 2;}
+        .day-card:active { transform: translateY(5px); box-shadow: none; }
         
-        .locked { 
-            background: #444; border-color: #222; color: #777; 
-            background-image: repeating-linear-gradient(45deg, #333 0, #333 10px, #444 10px, #444 20px);
-        }
-        .active-day { border-color: var(--red); animation: pulse-border 1s infinite; background: #fff; cursor: pointer;}
-        .completed { background: #bbf7d0; border-color: #166534; color: #166534; opacity: 0.8; }
-        .completed::after {
-            content: "✅"; position: absolute; font-size: 3rem; opacity: 0.8;
-            animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .final-day { border-color: gold; box-shadow: 0 0 15px gold; }
+        .date-number { font-family: 'Bangers'; font-size: 2.8rem; line-height: 1; color: var(--blue); }
+        .day-text { font-weight: bold; font-size: 0.9rem; text-transform: uppercase;}
+        
+        /* Statussen */
+        .locked { filter: grayscale(1); opacity: 0.6; background: #ddd; pointer-events: none;}
+        .active-day { border-color: var(--red); animation: pulse 1.5s infinite; background: #fff; cursor: pointer;}
+        .completed { background: #bbf7d0; border-color: #166534; color: #166534; opacity: 0.9; }
+        .completed::after { content: "✅"; position: absolute; font-size: 3rem; opacity: 0.8; }
+        .final-day { background: var(--gold); border-color: white; }
 
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(226, 54, 54, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(226, 54, 54, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(226, 54, 54, 0); }
-        }
-        @keyframes pop-in { from {transform: scale(0);} to {transform: scale(1);} }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-        /* MODALS */
+        /* POPUPS & MODALS */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 1000;
             flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* OUDER INSTRUCTIE */
-        .parent-instruction-box {
-            background: #fff; color: #000; padding: 20px; border-radius: 10px;
-            max-width: 90%; text-align: center; border: 5px solid var(--red); position: relative;
+        .instruction-box {
+            background: #fff; color: #000; padding: 25px; border-radius: 20px;
+            width: 90%; max-width: 500px; text-align: center; border: 6px solid var(--red);
+            position: relative;
         }
-        .close-instruction {
-            position: absolute; top: -15px; right: -15px; width: 40px; height: 40px;
-            background: var(--red); color: white; border-radius: 50%; border: 3px solid white;
-            font-weight: bold; font-size: 20px; line-height: 35px; cursor: pointer;
-        }
+
+        .game-title { font-family: 'Bangers'; font-size: 2rem; color: var(--blue); margin-bottom: 10px; }
+        .game-desc { font-size: 1.2rem; line-height: 1.5; margin-bottom: 20px; }
 
         /* GAME UI */
-        #gameArea {
-            width: 95%; height: 60vh; max-width: 500px; max-height: 500px;
-            background: #222; border: 4px solid white; border-radius: 10px;
-            position: relative; overflow: hidden; margin-top: 10px;
-            touch-action: none; 
+        #gameUI {
+            width: 100%; height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start; padding: 10px;
         }
 
-        .hud {
-            display: flex; justify-content: space-between; width: 95%; max-width: 500px;
-            color: var(--gold); font-family: 'Bangers'; font-size: 1.5rem; margin-top: 10px;
-            align-items: center;
+        .hud-bar {
+            display: flex; justify-content: space-between; width: 100%; max-width: 800px;
+            background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 50px;
+            margin-bottom: 10px; border: 2px solid white;
         }
-
-        /* EXIT KNOP (KRUISJE) */
-        .exit-btn {
-            background: #d32f2f; color: white; border: 2px solid white; width: 40px; height: 40px;
-            border-radius: 5px; font-weight: bold; font-size: 24px; cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        /* KNOPPEN */
-        button.action-btn {
-            background: var(--red); color: white; border: none; padding: 15px 30px;
-            font-family: 'Bangers'; font-size: 1.5rem; border-radius: 50px;
-            margin-top: 15px; cursor: pointer; box-shadow: 0 5px 0 #8b0000;
-        }
-        button.action-btn:active { transform: translateY(5px); box-shadow: none; }
-
-        /* --- GAME SPECIFIEK --- */
         
-        /* Whack-a-Goblin Grid */
-        .whack-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
-            height: 100%; padding: 10px;
+        .score-box { font-family: 'Bangers'; font-size: 1.8rem; color: var(--gold); }
+        .timer-box { font-family: 'Roboto'; font-weight: 900; font-size: 1.5rem; color: white; }
+
+        #gameCanvas {
+            flex-grow: 1; width: 100%; max-width: 800px; background: #222;
+            border: 4px solid var(--red); border-radius: 15px; position: relative;
+            overflow: hidden; touch-action: none;
         }
-        .whack-hole {
-            background: radial-gradient(circle, #000 0%, #333 100%);
-            border-radius: 50%; border: 2px solid #555;
-            position: relative; overflow: hidden;
+
+        /* Controls & Buttons */
+        .btn {
+            background: var(--red); color: white; border: none; padding: 15px 40px;
+            font-family: 'Bangers'; font-size: 1.8rem; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 6px 0 #8b0000; display: inline-block; margin: 10px;
         }
-        .whack-goblin {
-            position: absolute; bottom: -100%; left: 10%; width: 80%; height: 80%;
-            font-size: 3rem; text-align: center; transition: bottom 0.1s;
-            pointer-events: none; /* Klik op hole, niet op emoji direct */
-        }
-        .whack-hole.active .whack-goblin { bottom: 0; }
+        .btn:active { transform: translateY(6px); box-shadow: none; }
+        .btn-close { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 50%; padding:0; font-size: 1.5rem; line-height: 40px;}
+
+        /* WIN SCREEN */
+        .win-time { font-size: 2rem; font-weight: bold; color: var(--blue); margin: 10px 0; }
+        .best-time { font-size: 1.2rem; color: #555; }
+        .new-record { color: var(--red); font-weight: bold; animation: pulse 0.5s infinite; }
+
+        /* --- GAME ELEMENTS (CSS based) --- */
+        .target { position: absolute; user-select: none; }
+        .flying-obj { position: absolute; font-size: 3rem; transition: transform 0.1s; pointer-events: none;}
+        .slice-trail { position: absolute; height: 4px; background: white; pointer-events: none; border-radius: 2px; }
         
+        /* Runner */
+        .runner-player { 
+            position: absolute; bottom: 20px; left: 50px; font-size: 3.5rem; 
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .runner-obstacle { position: absolute; bottom: 20px; font-size: 3rem; }
+
+        /* Car Wash */
+        .dirty-spot { 
+            position: absolute; width: 50px; height: 50px; background: #5d4037; 
+            border-radius: 50%; opacity: 0.9; cursor: crosshair;
+        }
+        
+        /* Catch */
+        .basket { position: absolute; bottom: 10px; font-size: 4rem; transition: left 0.05s; }
+        .falling-item { position: absolute; font-size: 3rem; }
+
         /* Memory */
-        .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; height: 100%; padding: 5px; }
-        .mem-card { 
-            background: var(--blue); border-radius: 5px; display: flex; justify-content: center; align-items: center;
-            font-size: 0rem; transition: transform 0.3s; border: 2px solid #fff;
-        }
-        .mem-card.flipped { background: #fff; font-size: 2.5rem; transform: rotateY(180deg); }
-        .mem-card.matched { background: #4CAF50; visibility: visible; animation: pulse 0.5s; font-size: 2.5rem;}
+        .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; height: 100%; padding: 20px; align-content: center;}
+        .mem-card { background: var(--blue); border-radius: 8px; border: 2px solid white; display: flex; justify-content: center; align-items: center; font-size: 0;}
+        .mem-card.flipped { background: white; font-size: 3rem; transform: rotateY(180deg); transition: transform 0.3s;}
 
-        /* Maze */
-        #mazeControls { display: none; gap: 10px; margin-top: 10px; }
-        .arrow-btn { 
-            width: 60px; height: 60px; background: rgba(255,255,255,0.2); 
-            border: 2px solid white; border-radius: 10px; font-size: 24px; color: white;
-        }
-        .arrow-btn:active { background: var(--red); }
-        .maze-cell { display: flex; justify-content: center; align-items: center; font-size: 1.2rem;}
-        
-        /* Game elements */
-        .target { position: absolute; user-select: none; cursor: pointer; }
-        .mini-confetti { position: absolute; width: 5px; height: 5px; pointer-events: none; }
-        .reset-link { margin-top: 50px; color: #555; font-size: 0.7rem; display: block;}
-
+        .confetti { position: absolute; width: 10px; height: 10px; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <h1><span class="lou-name">Lou's</span><br>Center Parcs Countdown</h1>
+    <h1>LOU & SPIDEY</h1>
+    <div class="subtitle">Aftellen naar Center Parcs!</div>
     
-    <div id="calendar" class="calendar-grid"></div>
-
-    <div style="margin-top:20px; font-size:0.9rem; opacity:0.8;">
-        (Testmodus: Alle dagen zijn open)
+    <div id="calendarContainer">
+        <div id="calendar" class="calendar-grid"></div>
+        <div style="margin-top:30px;">
+            <button class="btn" style="background:#555; font-size:1rem; padding:10px 20px;" onclick="resetAll()">⚙️ Reset App</button>
+        </div>
     </div>
 
-    <div id="instructionModal" class="modal">
-        <div class="parent-instruction-box">
-            <div class="close-instruction" onclick="closeAllModals()">✕</div>
-            <div class="parent-title">👨‍👩‍👦 Voor Mama/Papa</div>
-            <div id="parentText" class="game-desc">Uitleg komt hier...</div>
-            <div style="font-size:0.9rem; color:#555; margin-bottom:15px;">(Zet het geluid aan!)</div>
-            <button class="action-btn" onclick="startGameReal()">Start Spel!</button>
+    <div id="introModal" class="modal">
+        <div class="instruction-box">
+            <button class="btn btn-close" onclick="closeModal('introModal')">✕</button>
+            <div id="introTitle" class="game-title">Spel Titel</div>
+            <div id="introText" class="game-desc">Uitleg...</div>
+            <button class="btn" onclick="startGame()">START DE TIJD!</button>
         </div>
     </div>
 
     <div id="gameModal" class="modal">
-        <div class="hud">
-            <span id="scoreDisplay">Score: 0</span>
-            <span id="timeDisplay">Tijd: 00</span>
-            <button class="exit-btn" onclick="quitGame()">✕</button>
+        <div id="gameUI">
+            <div class="hud-bar">
+                <div id="scoreVal" class="score-box">0 / 10</div>
+                <div id="timerVal" class="timer-box">0.0s</div>
+                <button class="btn btn-close" style="position:static; margin:0;" onclick="quitGame()">✕</button>
+            </div>
+            <div id="gameCanvas">
+                </div>
+            <div id="gameControls" style="height: 80px; width:100%; display:none; justify-content:center;">
+                <button id="actionBtn" class="btn" style="width:100%; height:100%; margin:0;">SPRING!</button>
+            </div>
         </div>
-        
-        <div id="gameArea"></div>
-
-        <div id="mazeControls">
-            <div></div><button class="arrow-btn" onpointerdown="moveMaze(0, -1)">⬆️</button><div></div>
-            <button class="arrow-btn" onpointerdown="moveMaze(-1, 0)">⬅️</button>
-            <button class="arrow-btn" onpointerdown="moveMaze(0, 1)">⬇️</button>
-            <button class="arrow-btn" onpointerdown="moveMaze(1, 0)">➡️</button>
-        </div>
-
-        <button id="finishBtn" class="action-btn" style="display:none;" onclick="completeDay()">
-            🎉 MISSIE GESLAAGD! 🎉
-        </button>
     </div>
 
-    <a class="reset-link" href="#" onclick="hardReset()">Reset Alle Voortgang</a>
+    <div id="winModal" class="modal">
+        <div class="instruction-box" style="border-color: var(--gold);">
+            <div class="game-title">🎉 GEWONNEN! 🎉</div>
+            <div class="game-desc">Je hebt het gehaald!</div>
+            
+            <div class="win-time" id="finalTimeDisplay">12.5s</div>
+            <div class="best-time" id="bestTimeDisplay">Record: 14.2s</div>
+            
+            <button class="btn" onclick="finishDay()">MISSIE VOLTOOID</button>
+        </div>
+    </div>
 
 <script>
-    // --- INSTELLINGEN ---
-    
-    // ZET DIT LATER OP 'false' OM DE DAGEN TE BLOKKEREN!
+    // --- CONFIGURATIE ---
+    // ZET DIT OP 'false' ALS DE DAGEN ECHT GEBLOKKEERD MOETEN ZIJN
     const TEST_MODE = true; 
     
-    const TARGET_DATE = new Date(2026, 1, 2); // 2 Feb 2026
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const TARGET_DATE = new Date(2026, 1, 2); // 2 Feb
+    const TOTAL_GOAL = 10; // Alles gaat tot 10
     
     // Globals
-    let activeIntervals = []; // Om timers netjes te stoppen
-    let gameActive = false;
+    let activeGameIdx = 0;
+    let activeDateId = null;
     let score = 0;
-    let selectedDateId = '';
-    let selectedDayNum = 0;
-    let activeMazePos = {x:0, y:0};
+    let startTime = 0;
+    let timerInterval = null;
+    let gameLoopRef = null;
+    let isGameRunning = false;
+    let touchX = 0; // Voor swipen/draggen
 
-    // --- AUDIO ---
-    function playTone(freq, type, duration) {
+    // Audio
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq = 600, type = 'sine', len = 0.1) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + len);
         osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + duration);
+        osc.start(); osc.stop(audioCtx.currentTime + len);
     }
     const SFX = {
-        blip: () => playTone(800, 'sine', 0.1),
-        hit:  () => playTone(150, 'square', 0.1),
-        bad:  () => playTone(100, 'sawtooth', 0.3),
-        good: () => { playTone(1000, 'sine', 0.1); setTimeout(()=>playTone(1500, 'sine', 0.2), 100); },
-        win:  () => { [500,600,700,800,1000].forEach((f,i)=>setTimeout(()=>playTone(f,'square',0.2),i*100)); }
+        tick: () => beep(800, 'sine', 0.05),
+        hit: () => beep(400, 'square', 0.1),
+        jump: () => beep(300, 'sawtooth', 0.2),
+        win: () => { 
+            [500,600,700,800,1000].forEach((f,i)=>setTimeout(()=>beep(f,'square',0.2), i*100)); 
+        }
     };
 
-    // --- TIMERS BEHEER ---
-    function setGameInterval(fn, time) {
-        let id = setInterval(fn, time);
-        activeIntervals.push({type:'interval', id:id});
-        return id;
-    }
-    function setGameTimeout(fn, time) {
-        let id = setTimeout(fn, time);
-        activeIntervals.push({type:'timeout', id:id});
-        return id;
-    }
-    function clearAllTimers() {
-        activeIntervals.forEach(t => {
-            if(t.type === 'interval') clearInterval(t.id);
-            else clearTimeout(t.id);
-        });
-        activeIntervals = [];
+    // --- INITIALISATIE ---
+    function init() {
+        renderCalendar();
     }
 
-    // --- KALENDER ---
-    function init() {
+    function renderCalendar() {
         const grid = document.getElementById('calendar');
         grid.innerHTML = '';
-        let loopDate = new Date(); // Start rendering vanaf vandaag
         
-        // Render tot target date
-        while (loopDate <= TARGET_DATE) {
-            renderDay(new Date(loopDate));
-            loopDate.setDate(loopDate.getDate() + 1);
+        let loopDate = new Date(); // Begin vandaag
+        // Simpelheidshalve renderen we 12 dagen (of tot target)
+        for(let i=0; i<12; i++) {
+            let d = new Date(loopDate);
+            d.setDate(d.getDate() + i);
+            if(d > TARGET_DATE) break;
+            
+            createDayCard(d, grid);
         }
     }
 
-    function renderDay(dateObj) {
-        const today = new Date();
-        const isToday = dateObj.getDate() === today.getDate() && dateObj.getMonth() === today.getMonth();
-        const dateStr = `${dateObj.getDate()}-${dateObj.getMonth()}`;
-        const isDone = localStorage.getItem('lou_cp_' + dateStr) === 'true';
-        const isTarget = dateObj.getDate() === 2 && dateObj.getMonth() === 1;
+    function createDayCard(date, container) {
+        const today = new Date(); today.setHours(0,0,0,0);
+        const cardDate = new Date(date); cardDate.setHours(0,0,0,0);
+        
+        const dateId = `lou_${date.getDate()}_${date.getMonth()}`;
+        const isDone = localStorage.getItem(dateId + '_done') === 'true';
+        const isFuture = cardDate > today;
+        const isTarget = date.getDate() === 2 && date.getMonth() === 1;
 
-        let statusClass = 'future';
-        let clickAction = null;
+        let status = '';
+        if(isDone) status = 'completed';
+        else if(isFuture && !TEST_MODE) status = 'locked';
+        else status = 'active-day';
 
-        if (isDone) statusClass = 'completed';
-        else if (isToday || TEST_MODE) { // TEST_MODE zorgt dat alles open is
-            statusClass = 'active-day';
-            clickAction = () => openInstruction(dateObj.getDate(), dateStr);
-        } else if (dateObj < today) statusClass = 'locked'; 
-        else statusClass = 'locked';
-
-        if (isTarget) statusClass += ' final-day';
+        if(isTarget) status += ' final-day';
 
         const el = document.createElement('div');
-        el.className = `day-card ${statusClass}`;
+        el.className = `day-card ${status}`;
         el.innerHTML = `
-            <div class="day-text">${dateObj.toLocaleDateString('nl-NL', {weekday:'short'})}</div>
-            <div class="date-number">${dateObj.getDate()}</div>
-            <div class="day-text">${dateObj.toLocaleDateString('nl-NL', {month:'short'})}</div>
+            <div class="day-text">${date.toLocaleDateString('nl-NL', {weekday:'short'})}</div>
+            <div class="date-number">${date.getDate()}</div>
+            <div class="day-text">${date.toLocaleDateString('nl-NL', {month:'short'})}</div>
         `;
-        if (clickAction) el.onclick = clickAction;
-        document.getElementById('calendar').appendChild(el);
+
+        if(status.includes('active-day') || status.includes('completed') || status.includes('final-day')) {
+            el.onclick = () => openIntro(date, dateId);
+        }
+        container.appendChild(el);
     }
 
-    // --- GAME FLOW ---
-    function openInstruction(dayNum, dateId) {
-        selectedDateId = dateId;
-        selectedDayNum = dayNum;
-        const modal = document.getElementById('instructionModal');
-        const txt = document.getElementById('parentText');
-        
-        if (dayNum === 2 && new Date().getMonth() === 1) {
-            txt.innerHTML = "HET IS ZOVER! Klik op start!";
-            modal.style.display = 'flex';
+    // --- MENU FLOW ---
+    function openIntro(date, dateId) {
+        if(date.getDate() === 2 && date.getMonth() === 1) {
+            alert("HOERA! VANDAAG GAAN WE! 🚗💨");
+            SFX.win();
             return;
         }
 
-        const gameIdx = (dayNum % 6) + 1; 
-        let uitleg = "";
+        activeDateId = dateId;
+        // Game index 1-6 op basis van dag
+        activeGameIdx = (date.getDate() % 6) + 1;
         
-        if(gameIdx === 1) uitleg = "<b>Spel: Whack-a-Goblin</b><br>Tik snel op de Goblins (👺) die uit de webben komen. Pas op: ze verdwijnen snel!";
-        if(gameIdx === 2) uitleg = "<b>Spel: Spidey Memory</b><br>Zoek twee dezelfde plaatjes. Vind ze allemaal!";
-        if(gameIdx === 3) uitleg = "<b>Spel: Bommenwerper</b><br>Bescherm de stad! Tik ALLEEN de bommen (💣) aan. Cadeautjes (🎁) moet je laten vallen.";
-        if(gameIdx === 4) uitleg = "<b>Spel: Het Doolhof</b><br>Gebruik de pijltjes om Spidey naar de vlag (🏁) te brengen.";
-        if(gameIdx === 5) uitleg = "<b>Spel: Web Schieten</b><br>Tik zo snel mogelijk op de roosjes (🎯) die verschijnen.";
-        if(gameIdx === 6) uitleg = "<b>Spel: Spidey Jump</b><br>Tik op het scherm om over de bal te springen!";
+        const titles = [
+            "", 
+            "Pumpkin Ninja 🎃", 
+            "Zoek Venom 👀", 
+            "Center Parcs Car Wash 🚗", 
+            "Spidey Run 🏃", 
+            "Vang de Spullen 🩳", 
+            "Spidey Memory 🧠"
+        ];
+        
+        const descs = [
+            "",
+            "Veeg over het scherm om de pompoenen door midden te hakken! Raak er 10.",
+            "Er verschijnen 10 keer plaatjes. Tik zo snel mogelijk op Venom (de zwarte)!",
+            "De auto is vies! Wrijf met je vinger over de modder om hem schoon te maken.",
+            "Ren door het bos! Tik op het scherm om over de obstakels te springen.",
+            "Vang 10 vakantiespullen (zwembroek, bal) met Spidey. Ontwijk de spinnen!",
+            "Zoek de 6 paren bij elkaar. Hoe snel ben jij?"
+        ];
 
-        txt.innerHTML = uitleg;
-        modal.style.display = 'flex';
+        document.getElementById('introTitle').innerText = titles[activeGameIdx];
+        document.getElementById('introText').innerText = descs[activeGameIdx];
+        document.getElementById('introModal').style.display = 'flex';
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function startGame() {
+        closeModal('introModal');
+        document.getElementById('gameModal').style.display = 'flex';
+        document.getElementById('gameControls').style.display = 'none'; // Standaard uit
+        
+        isGameRunning = true;
+        score = 0;
+        updateHUD();
+        
+        // Timer Reset
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            const delta = (Date.now() - startTime) / 1000;
+            document.getElementById('timerVal').innerText = delta.toFixed(1) + 's';
+        }, 100);
+
+        // Start Specifieke Game
+        const canvas = document.getElementById('gameCanvas');
+        canvas.innerHTML = ''; // Clear
+        
+        if(activeGameIdx === 1) initNinja(canvas);
+        if(activeGameIdx === 2) initSearch(canvas);
+        if(activeGameIdx === 3) initCarWash(canvas);
+        if(activeGameIdx === 4) initRunner(canvas);
+        if(activeGameIdx === 5) initCatcher(canvas);
+        if(activeGameIdx === 6) initMemory(canvas);
     }
 
     function quitGame() {
-        gameActive = false;
-        clearAllTimers();
+        isGameRunning = false;
+        clearInterval(timerInterval);
+        cancelAnimationFrame(gameLoopRef);
         document.getElementById('gameModal').style.display = 'none';
-        document.getElementById('mazeControls').style.display = 'none';
-        // Geen 'completeDay' aanroepen, dus dag blijft open
-    }
-    
-    function closeAllModals() {
-        document.getElementById('instructionModal').style.display = 'none';
     }
 
-    function startGameReal() {
-        closeAllModals();
-        const gm = document.getElementById('gameModal');
-        gm.style.display = 'flex';
-        document.getElementById('finishBtn').style.display = 'none';
-        document.getElementById('mazeControls').style.display = 'none';
+    function updateHUD() {
+        document.getElementById('scoreVal').innerText = `${score} / ${TOTAL_GOAL}`;
+        if(activeGameIdx === 6) document.getElementById('scoreVal').innerText = `${score} / 6 Paren`;
+    }
+
+    function triggerWin() {
+        if(!isGameRunning) return;
+        isGameRunning = false;
+        clearInterval(timerInterval);
+        cancelAnimationFrame(gameLoopRef);
         
-        score = 0;
-        gameActive = true;
-        clearAllTimers(); // Voor de zekerheid
-
-        if (selectedDayNum === 2 && new Date().getMonth() === 1) {
-             document.getElementById('gameArea').innerHTML = "<div style='display:flex;height:100%;align-items:center;justify-content:center;font-size:80px;'>🏊‍♂️🚗🎉</div>";
-             playWinEffect();
-             return;
+        const finalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+        
+        // Highscore Logic
+        const storeKey = `highscore_game_${activeGameIdx}`;
+        const oldBest = parseFloat(localStorage.getItem(storeKey)) || 999;
+        let isRecord = false;
+        
+        if(parseFloat(finalTime) < oldBest) {
+            localStorage.setItem(storeKey, finalTime);
+            isRecord = true;
         }
 
-        const gameIdx = (selectedDayNum % 6) + 1;
-        if(gameIdx === 1) playGoblinSmash(); // Vernieuwd
-        if(gameIdx === 2) playMemory();
-        if(gameIdx === 3) playBombs();
-        if(gameIdx === 4) playMaze();
-        if(gameIdx === 5) playWebShooter();
-        if(gameIdx === 6) playJumper();
+        // Show Win Modal
+        document.getElementById('gameModal').style.display = 'none';
+        document.getElementById('winModal').style.display = 'flex';
+        document.getElementById('finalTimeDisplay').innerText = `Jouw tijd: ${finalTime}s`;
+        
+        const bestDisplay = isRecord ? "NIEUW RECORD!" : `Record: ${oldBest}s`;
+        document.getElementById('bestTimeDisplay').innerText = bestDisplay;
+        if(isRecord) document.getElementById('bestTimeDisplay').className = "new-record";
+        
+        SFX.win();
+        spawnConfetti();
     }
 
-    // --- GAME 1: WHACK-A-GOBLIN (NIEUW) ---
-    function playGoblinSmash() {
-        updateHUD(0, 10);
-        const area = document.getElementById('gameArea');
-        area.innerHTML = '<div class="whack-grid" id="whackGrid"></div>';
-        const grid = document.getElementById('whackGrid');
+    function finishDay() {
+        localStorage.setItem(activeDateId + '_done', 'true');
+        closeModal('winModal');
+        init(); // Refresh kalender
+    }
+
+    function resetAll() {
+        if(confirm("Alles wissen?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    // ---------------- DE 6 GAMES ----------------
+
+    // 1. NINJA (Swipe events)
+    function initNinja(canvas) {
+        let spawnTimer;
         
-        // Maak 9 gaten
-        let holes = [];
-        for(let i=0; i<9; i++) {
-            const h = document.createElement('div');
-            h.className = 'whack-hole';
-            h.innerHTML = '<div class="whack-goblin">👺</div>';
-            h.onpointerdown = (e) => {
-                e.preventDefault();
-                if(h.classList.contains('active')) {
+        // Track mouse/touch trail
+        canvas.onpointermove = (e) => {
+            if(!isGameRunning) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Check collisions with flying objects
+            document.querySelectorAll('.flying-obj').forEach(obj => {
+                const oRect = obj.getBoundingClientRect();
+                const cRect = canvas.getBoundingClientRect(); // Relatief rekenen
+                
+                // Simpele afstand check
+                const ox = (oRect.left - cRect.left) + oRect.width/2;
+                const oy = (oRect.top - cRect.top) + oRect.height/2;
+                
+                const dist = Math.hypot(ox - x, oy - y);
+                if(dist < 50) {
+                    obj.remove();
                     SFX.hit();
-                    h.classList.remove('active');
-                    // Visueel effectje
-                    h.style.backgroundColor = 'var(--red)';
-                    setTimeout(()=>h.style.backgroundColor='', 100);
                     score++;
-                    updateHUD(score, 10);
-                    if(score >= 10) endGame();
+                    updateHUD();
+                    if(score >= TOTAL_GOAL) triggerWin();
+                }
+            });
+        };
+
+        function spawn() {
+            if(!isGameRunning) return;
+            const el = document.createElement('div');
+            el.className = 'flying-obj';
+            el.innerText = Math.random() > 0.5 ? '🎃' : '🕸️';
+            el.style.left = '-50px';
+            el.style.top = Math.random() * 80 + '%';
+            canvas.appendChild(el);
+
+            // Animate via Web Animations API (gladder)
+            const anim = el.animate([
+                { transform: 'translateX(0) rotate(0deg)' },
+                { transform: `translateX(${canvas.clientWidth + 100}px) rotate(360deg)` }
+            ], {
+                duration: 2000 + Math.random() * 1000,
+                easing: 'linear'
+            });
+
+            anim.onfinish = () => { if(el.parentNode) el.remove(); };
+            
+            spawnTimer = setTimeout(spawn, 800);
+        }
+        spawn();
+    }
+
+    // 2. ZOEK VENOM (Tap Target)
+    function initSearch(canvas) {
+        function nextRound() {
+            if(!isGameRunning) return;
+            canvas.innerHTML = '';
+            
+            // Maak afleiding
+            for(let i=0; i<15; i++) {
+                const dummy = document.createElement('div');
+                dummy.className = 'target';
+                dummy.innerText = '🕷️';
+                dummy.style.fontSize = '40px';
+                dummy.style.left = Math.random() * 90 + '%';
+                dummy.style.top = Math.random() * 90 + '%';
+                canvas.appendChild(dummy);
+            }
+
+            // De Target
+            const target = document.createElement('div');
+            target.className = 'target';
+            target.innerText = '🦸‍♂️'; // Of Venom, wat je wil
+            target.style.fontSize = '50px';
+            target.style.left = Math.random() * 85 + '%';
+            target.style.top = Math.random() * 85 + '%';
+            target.style.filter = 'drop-shadow(0 0 5px white)';
+            
+            target.onpointerdown = (e) => {
+                e.stopPropagation();
+                SFX.tick();
+                score++;
+                updateHUD();
+                if(score >= TOTAL_GOAL) triggerWin();
+                else nextRound();
+            };
+            canvas.appendChild(target);
+        }
+        nextRound();
+    }
+
+    // 3. CAR WASH (Mud wiping)
+    function initCarWash(canvas) {
+        // Auto background
+        const car = document.createElement('div');
+        car.innerText = '🚗';
+        car.style.cssText = "font-size: 150px; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);";
+        canvas.appendChild(car);
+
+        // Mud Blobs
+        const blobs = [];
+        for(let i=0; i<30; i++) { // Meer blobs voor "100%" gevoel
+            const blob = document.createElement('div');
+            blob.className = 'dirty-spot';
+            blob.style.left = (20 + Math.random() * 60) + '%'; // Centraal
+            blob.style.top = (20 + Math.random() * 60) + '%';
+            
+            blob.onpointerover = () => {
+                if(blob.style.opacity > 0) {
+                    blob.style.opacity = 0;
+                    blob.style.pointerEvents = 'none';
+                    SFX.tick();
+                    checkClean();
                 }
             };
-            grid.appendChild(h);
-            holes.push(h);
+            canvas.appendChild(blob);
+            blobs.push(blob);
         }
 
-        function peep() {
-            if(!gameActive) return;
-            const randomHole = holes[Math.floor(Math.random() * holes.length)];
-            randomHole.classList.add('active');
-            
-            // Verdwijn na tijd (sneller als score hoger is)
-            const speed = Math.max(500, 1000 - (score * 50)); 
-            
-            setGameTimeout(() => {
-                randomHole.classList.remove('active');
-                if(gameActive && score < 10) {
-                    setGameTimeout(peep, Math.random() * 500 + 200);
-                }
-            }, speed);
+        // Touch support for swiping over elements
+        canvas.onpointermove = (e) => {
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            if(el && el.classList.contains('dirty-spot')) {
+                 el.onpointerover();
+            }
+        };
+
+        function checkClean() {
+            const remaining = blobs.filter(b => b.style.opacity != 0).length;
+            const cleaned = 30 - remaining;
+            // Map 30 blobs to score 10
+            const newScore = Math.floor((cleaned / 30) * 10);
+            if(newScore > score) {
+                score = newScore;
+                updateHUD();
+            }
+            if(remaining === 0) triggerWin();
         }
-        
-        peep();
     }
 
-    // --- GAME 2: MEMORY ---
-    function playMemory() {
-        updateHUD(0, "6 paren");
-        const area = document.getElementById('gameArea');
-        area.innerHTML = '<div class="mem-grid" id="memGrid"></div>';
+    // 4. RUNNER (Jump)
+    function initRunner(canvas) {
+        document.getElementById('gameControls').style.display = 'flex';
+        
+        const player = document.createElement('div');
+        player.className = 'runner-player';
+        player.innerText = '🕷️';
+        canvas.appendChild(player);
+
+        let isJumping = false;
+        
+        // Jump Action
+        const jump = () => {
+            if(isJumping) return;
+            isJumping = true;
+            SFX.jump();
+            player.style.bottom = '150px';
+            setTimeout(() => {
+                player.style.bottom = '20px';
+                setTimeout(() => isJumping = false, 300);
+            }, 500);
+        };
+
+        document.getElementById('actionBtn').onclick = jump;
+        canvas.onpointerdown = jump;
+
+        function spawnObstacle() {
+            if(!isGameRunning) return;
+            const obs = document.createElement('div');
+            obs.className = 'runner-obstacle';
+            obs.innerText = '🌲';
+            obs.style.left = '100%';
+            canvas.appendChild(obs);
+
+            // Move logic manual for collision detection
+            let pos = 100;
+            const moveInt = setInterval(() => {
+                if(!isGameRunning) { clearInterval(moveInt); return; }
+                pos -= 1.5; // Speed
+                obs.style.left = pos + '%';
+
+                // Collision
+                if(pos < 15 && pos > 5) { // In zone
+                     if(!isJumping) {
+                         // Hit! Reset score of straf?
+                         obs.innerText = '💥';
+                         SFX.hit();
+                     } else if (!obs.passed) {
+                         obs.passed = true;
+                         score++;
+                         updateHUD();
+                         SFX.tick();
+                         if(score >= TOTAL_GOAL) triggerWin();
+                     }
+                }
+
+                if(pos < -10) {
+                    obs.remove();
+                    clearInterval(moveInt);
+                }
+            }, 20);
+
+            setTimeout(spawnObstacle, 1500 + Math.random() * 1000);
+        }
+        spawnObstacle();
+    }
+
+    // 5. CATCHER (Drag)
+    function initCatcher(canvas) {
+        const basket = document.createElement('div');
+        basket.className = 'basket';
+        basket.innerText = '🕸️'; // Mandje is een web
+        basket.style.left = '50%';
+        canvas.appendChild(basket);
+
+        // Move logic
+        canvas.onpointermove = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            // Clamp
+            if(x < 0) x = 0;
+            if(x > rect.width) x = rect.width;
+            basket.style.left = (x - 20) + 'px'; // Center
+        };
+
+        function drop() {
+            if(!isGameRunning) return;
+            const item = document.createElement('div');
+            item.className = 'falling-item';
+            const isGood = Math.random() > 0.3;
+            item.innerText = isGood ? '🩳' : '🕷️'; // Zwembroek vs Spin
+            item.style.left = Math.random() * 90 + '%';
+            item.style.top = '-50px';
+            canvas.appendChild(item);
+
+            let pos = -50;
+            const fallInt = setInterval(() => {
+                if(!isGameRunning) { clearInterval(fallInt); return; }
+                pos += 3;
+                item.style.top = pos + 'px';
+                
+                // Collision
+                const bRect = basket.getBoundingClientRect();
+                const iRect = item.getBoundingClientRect();
+                
+                // Simple overlap
+                if(pos > canvas.clientHeight - 80 && pos < canvas.clientHeight - 20) {
+                     const bX = parseFloat(basket.style.left);
+                     const iX = parseFloat(item.style.left) / 100 * canvas.clientWidth;
+                     
+                     if(Math.abs(bX - iX) < 60) {
+                         // Catch
+                         item.remove();
+                         clearInterval(fallInt);
+                         if(isGood) {
+                             score++;
+                             SFX.tick();
+                             updateHUD();
+                             if(score >= TOTAL_GOAL) triggerWin();
+                         } else {
+                             SFX.hit();
+                             score = Math.max(0, score - 1); // Straf
+                             updateHUD();
+                         }
+                     }
+                }
+
+                if(pos > canvas.clientHeight) {
+                    item.remove();
+                    clearInterval(fallInt);
+                }
+            }, 20);
+
+            setTimeout(drop, 1000);
+        }
+        drop();
+    }
+
+    // 6. MEMORY (6 paren)
+    function initMemory(canvas) {
+        const grid = document.createElement('div');
+        grid.className = 'mem-grid';
+        canvas.appendChild(grid);
+
         const icons = ['🕷️','🕸️','👺','🦸','🏙️','⚡'];
         let deck = [...icons, ...icons].sort(()=>Math.random()-0.5);
         let first = null; let lock = false; let matches = 0;
@@ -459,260 +711,61 @@
             const card = document.createElement('div');
             card.className = 'mem-card';
             card.dataset.val = icon;
-            card.innerText = icon; 
             card.onclick = () => {
                 if(lock || card === first || card.classList.contains('matched')) return;
-                SFX.blip();
+                SFX.jump();
                 card.classList.add('flipped');
-                if(!first) { first = card; } 
+                card.innerText = icon;
+
+                if(!first) { first = card; }
                 else {
                     lock = true;
                     if(first.dataset.val === card.dataset.val) {
-                        setGameTimeout(() => {
-                            SFX.good();
+                        setTimeout(() => {
+                            SFX.tick();
                             first.classList.add('matched'); card.classList.add('matched');
-                            spawnMiniConfetti(card.offsetLeft, card.offsetTop);
-                            matches++; first = null; lock = false;
-                            updateHUD(matches, 6);
-                            if(matches === 6) endGame();
+                            matches++;
+                            score = matches; // Score = matches here
+                            updateHUD();
+                            first = null; lock = false;
+                            if(matches === 6) triggerWin();
                         }, 500);
                     } else {
-                        setGameTimeout(() => {
-                            SFX.bad();
+                        setTimeout(() => {
                             first.classList.remove('flipped'); card.classList.remove('flipped');
+                            first.innerText = ''; card.innerText = '';
                             first = null; lock = false;
                         }, 1000);
                     }
                 }
-            }
-            document.getElementById('memGrid').appendChild(card);
+            };
+            grid.appendChild(card);
         });
     }
 
-    // --- GAME 3: BOMMEN ---
-    function playBombs() {
-        let timeLeft = 30;
-        updateHUD(0, "Overleef");
-        const area = document.getElementById('gameArea');
-        area.innerHTML = '';
-
-        setGameInterval(() => {
-            timeLeft--;
-            document.getElementById('timeDisplay').innerText = "Tijd: " + timeLeft;
-            if(timeLeft <= 0) endGame();
-        }, 1000);
-
-        function drop() {
-            if(!gameActive) return;
-            const isBomb = Math.random() > 0.4; 
-            const el = document.createElement('div');
-            el.innerText = isBomb ? '💣' : '🎁';
-            el.className = 'target';
-            el.style.fontSize = '40px';
-            el.style.left = Math.random() * 85 + '%';
-            el.style.top = '-50px';
-            el.style.transition = 'top 2.5s linear';
-            
-            area.appendChild(el);
-            setGameTimeout(()=> el.style.top = '110%', 50);
-
-            el.onpointerdown = (e) => {
-                e.preventDefault();
-                if(isBomb) {
-                    SFX.good();
-                    score++;
-                    updateHUD(score, "Go!");
-                    el.remove();
-                } else {
-                    SFX.bad();
-                }
-            }
-            // Nieuwe drop
-            setGameTimeout(drop, 800);
-        }
-        drop();
-    }
-
-    // --- GAME 4: DOOLHOF ---
-    function playMaze() {
-        document.getElementById('mazeControls').style.display = 'flex';
-        updateHUD(0, "Naar Vlag");
-        const area = document.getElementById('gameArea');
-        area.innerHTML = '';
-        area.style.display = 'grid';
-        area.style.gridTemplateColumns = 'repeat(6, 1fr)';
-        area.style.gridTemplateRows = 'repeat(6, 1fr)';
-
-        const map = [[2,0,1,0,0,0],[1,0,1,0,1,1],[0,0,0,0,0,0],[0,1,1,1,1,0],[0,0,0,1,0,0],[1,1,0,0,0,3]];
-
-        for(let y=0; y<6; y++) {
-            for(let x=0; x<6; x++) {
-                const cell = document.createElement('div');
-                cell.className = 'maze-cell';
-                if(map[y][x] === 1) cell.style.background = '#555';
-                if(map[y][x] === 3) cell.innerText = '🏁';
-                cell.id = `cell_${x}_${y}`;
-                area.appendChild(cell);
-                if(map[y][x] === 2) { activeMazePos = {x,y}; renderPlayer(x,y); }
-            }
-        }
-        window.currentMap = map;
-    }
-
-    function moveMaze(dy, dx) {
-        if(!gameActive) return;
-        const newX = activeMazePos.x + dx;
-        const newY = activeMazePos.y + dy;
-        const map = window.currentMap;
-        if(newX < 0 || newX > 5 || newY < 0 || newY > 5) return;
-        if(map[newY][newX] === 1) { SFX.bad(); return; }
-        
-        SFX.blip();
-        document.getElementById(`cell_${activeMazePos.x}_${activeMazePos.y}`).innerHTML = '';
-        activeMazePos = {x: newX, y: newY};
-        renderPlayer(newX, newY);
-        if(map[newY][newX] === 3) endGame();
-    }
-    function renderPlayer(x,y) { document.getElementById(`cell_${x}_${y}`).innerHTML = '🕷️'; }
-
-    // --- GAME 5: SHOOTER ---
-    function playWebShooter() {
-        updateHUD(0, 15);
-        const area = document.getElementById('gameArea');
-        area.innerHTML = '';
-        function spawnTarget() {
-            if(!gameActive) return;
-            const t = document.createElement('div');
-            t.innerText = '🎯';
-            t.className = 'target';
-            t.style.fontSize = '60px';
-            t.style.left = Math.random() * 80 + '%';
-            t.style.top = Math.random() * 80 + '%';
-            
-            let to = setGameTimeout(() => {
-                if(t.parentNode) t.remove();
-                if(gameActive) spawnTarget();
-            }, 1000);
-
-            t.onpointerdown = (e) => {
-                e.preventDefault();
-                clearTimeout(to);
-                SFX.good();
-                score++;
-                updateHUD(score, 15);
-                t.remove();
-                if(score >= 15) endGame();
-                else spawnTarget();
-            };
-            area.appendChild(t);
-        }
-        spawnTarget();
-    }
-
-    // --- GAME 6: JUMP ---
-    function playJumper() {
-        updateHUD(0, "5 Sprongen");
-        const area = document.getElementById('gameArea');
-        area.innerHTML = '';
-        
-        const floor = document.createElement('div');
-        floor.style.cssText = "position:absolute; bottom:0; width:100%; height:20px; background:white;";
-        area.appendChild(floor);
-        const spidey = document.createElement('div');
-        spidey.innerText = '🕷️';
-        spidey.style.cssText = "position:absolute; bottom:20px; left:20px; font-size:50px; transition: bottom 0.3s;";
-        area.appendChild(spidey);
-
-        let jumping = false;
-        area.onpointerdown = () => {
-            if(jumping) return;
-            SFX.blip(); jumping = true;
-            spidey.style.bottom = "120px";
-            setGameTimeout(() => {
-                spidey.style.bottom = "20px";
-                setGameTimeout(() => jumping = false, 300);
-            }, 400);
-        };
-
-        function spawnObstacle() {
-            if(!gameActive) return;
-            const obs = document.createElement('div');
-            obs.innerText = '⚽';
-            obs.style.cssText = "position:absolute; bottom:20px; right:-50px; font-size:40px; transition: right 2s linear;";
-            area.appendChild(obs);
-            setGameTimeout(() => obs.style.right = '120%', 50);
-
-            let check = setGameInterval(() => {
-                const sRect = spidey.getBoundingClientRect();
-                const oRect = obs.getBoundingClientRect();
-                if(oRect.left < sRect.right && oRect.right > sRect.left && sRect.bottom > oRect.top) {
-                    SFX.bad();
-                    obs.remove(); clearInterval(check);
-                    score = 0; updateHUD(score, 5);
-                }
-            }, 50);
-
-            setGameTimeout(() => {
-                if(obs.parentNode) {
-                    obs.remove(); clearInterval(check);
-                    score++; updateHUD(score, 5);
-                    if(score >= 5) endGame();
-                    else setGameTimeout(spawnObstacle, 1000);
-                }
-            }, 2100);
-        }
-        spawnObstacle();
-    }
-
     // --- UTILS ---
-    function updateHUD(s, goal) {
-        document.getElementById('scoreDisplay').innerText = `Score: ${s}/${goal}`;
+    function spawnConfetti() {
+        const colors = ['#f00', '#00f', '#ff0', '#fff'];
+        for(let i=0; i<50; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.background = colors[Math.floor(Math.random()*colors.length)];
+            c.style.left = '50%'; c.style.top = '50%';
+            document.body.appendChild(c);
+            
+            const destX = (Math.random() - 0.5) * window.innerWidth;
+            const destY = (Math.random() - 0.5) * window.innerHeight;
+            
+            c.animate([
+                { transform: 'translate(0,0)' },
+                { transform: `translate(${destX}px, ${destY}px)`, opacity: 0 }
+            ], { duration: 1500, easing: 'ease-out' }).onfinish = () => c.remove();
+        }
     }
 
-    function endGame() {
-        gameActive = false;
-        clearAllTimers();
-        playWinEffect();
-    }
-
-    function playWinEffect() {
-        SFX.win();
-        document.getElementById('finishBtn').style.display = 'block';
-        for(let i=0; i<15; i++) setTimeout(() => spawnMiniConfetti(Math.random()*window.innerWidth, Math.random()*window.innerHeight, true), i*100);
-    }
-
-    function spawnMiniConfetti(x, y, big = false) {
-        const colors = ['#E23636', '#013889', '#FFF', '#FFD700'];
-        const c = document.createElement('div');
-        c.className = 'mini-confetti';
-        c.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
-        c.style.left = x + 'px'; c.style.top = y + 'px';
-        document.body.appendChild(c);
-
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = Math.random() * (big ? 200 : 100);
-        const destX = x + Math.cos(angle) * velocity;
-        const destY = y + Math.sin(angle) * velocity;
-
-        c.animate([
-            { transform: `translate(0,0) scale(1)`, opacity: 1 },
-            { transform: `translate(${destX - x}px, ${destY - y}px) scale(0)`, opacity: 0 }
-        ], { duration: 800 + Math.random() * 500, fill: 'forwards' }).onfinish = () => c.remove();
-    }
-
-    function completeDay() {
-        document.getElementById('gameModal').style.display = 'none';
-        if (selectedDateId) localStorage.setItem('lou_cp_' + selectedDateId, 'true');
-        init();
-        SFX.win();
-        spawnMiniConfetti(window.innerWidth/2, window.innerHeight/2, true);
-    }
-
-    function hardReset() {
-        if(confirm("Alles wissen?")) { localStorage.clear(); location.reload(); }
-    }
-
+    // Boot
     init();
+
 </script>
 </body>
 </html>
