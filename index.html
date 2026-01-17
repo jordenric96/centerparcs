@@ -33,14 +33,13 @@
             height: 100vh; display: flex; flex-direction: column;
         }
 
-        /* HEADER */
         header { padding: 10px; background: rgba(0,0,0,0.2); }
         h1 {
             font-family: 'Bangers', cursive; font-size: 2rem; margin: 0;
             color: var(--red); text-shadow: 2px 2px 0 #fff; letter-spacing: 1px;
         }
 
-        /* KALENDER GRID */
+        /* KALENDER */
         #calendarContainer {
             flex-grow: 1; overflow-y: auto; touch-action: pan-y; 
             padding: 20px; padding-bottom: 80px;
@@ -63,7 +62,6 @@
         .date-number { font-family: 'Bangers'; font-size: 3rem; line-height: 1; color: var(--blue); }
         .day-text { font-weight: bold; font-size: 0.9rem; text-transform: uppercase;}
         
-        /* Statussen */
         .locked { filter: grayscale(1); opacity: 0.5; background: #ccc; pointer-events: none;}
         .active-day { border-color: var(--red); animation: pulse 1.5s infinite; background: #fff; cursor: pointer;}
         .completed { background: #bbf7d0; border-color: #166534; color: #166534; opacity: 0.9; }
@@ -107,7 +105,6 @@
             overflow: hidden; touch-action: none;
         }
 
-        /* Buttons */
         .btn {
             background: var(--red); color: white; border: none; padding: 15px 30px;
             font-family: 'Bangers'; font-size: 1.5rem; border-radius: 50px;
@@ -120,22 +117,16 @@
         }
 
         /* --- GAME ELEMENTS --- */
-        
-        /* Memory Fix */
         .mem-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            grid-template-rows: repeat(3, 1fr); /* Forceer hoogte */
+            display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); 
             gap: 10px; width: 100%; height: 100%; padding: 10px; 
         }
         .mem-card { 
             background: var(--blue); border-radius: 8px; border: 3px solid white; 
-            display: flex; justify-content: center; align-items: center; font-size: 0;
-            width: 100%; height: 100%; /* Vul cel */
+            display: flex; justify-content: center; align-items: center; font-size: 0; width: 100%; height: 100%; 
         }
         .mem-card.flipped { background: white; font-size: 3.5rem; transform: rotateY(180deg); transition: transform 0.3s;}
 
-        /* Maze */
         .maze-grid { display: grid; width: 100%; height: 100%; }
         .maze-cell { border: 1px solid #333; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;}
         .maze-controls { 
@@ -148,19 +139,15 @@
         }
         .arrow-btn:active { background: var(--red); }
 
-        /* Algemeen */
         .target { position: absolute; user-select: none; }
         .flying-obj { position: absolute; font-size: 3.5rem; pointer-events: none;}
-        
-        /* Win Screen */
         .win-time { font-size: 2.5rem; font-weight: bold; color: var(--blue); margin: 15px 0; }
         .best-time { font-size: 1.2rem; color: #555; }
         .new-record { color: var(--red); font-weight: bold; animation: pulse 0.5s infinite; }
         .confetti { position: absolute; width: 10px; height: 10px; pointer-events: none; }
         
-        /* Score Reset Effect */
         .shake-screen { animation: shake 0.5s; }
-        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 20% { transform: translate(-3px, 0px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-3px, 1px); } 80% { transform: translate(-1px, -1px); } 100% { transform: translate(0,0); } }
 
     </style>
 </head>
@@ -197,9 +184,7 @@
             <div id="gameCanvas"></div>
 
             <div id="mazeControls" class="maze-controls">
-                <div></div>
-                <div class="arrow-btn" onpointerdown="handleMazeMove(0, -1)">⬆️</div>
-                <div></div>
+                <div></div><div class="arrow-btn" onpointerdown="handleMazeMove(0, -1)">⬆️</div><div></div>
                 <div class="arrow-btn" onpointerdown="handleMazeMove(-1, 0)">⬅️</div>
                 <div class="arrow-btn" onpointerdown="handleMazeMove(0, 1)">⬇️</div>
                 <div class="arrow-btn" onpointerdown="handleMazeMove(1, 0)">➡️</div>
@@ -217,14 +202,11 @@
     </div>
 
 <script>
-    // --- CONFIGURATIE ---
-    // ZET OP 'false' ALS JE KLAAR BENT MET TESTEN!
-    const TEST_MODE = true; 
-    
+    // --- SETTINGS ---
+    const TEST_MODE = true; // ZET OP FALSE VOOR ECHIE
     const TARGET_DATE = new Date(2026, 1, 2); 
     const TOTAL_GOAL = 10;
     
-    // Globals
     let activeGameIdx = 0;
     let activeDateId = null;
     let score = 0;
@@ -233,7 +215,6 @@
     let isGameRunning = false;
     let activeMazePos = {x:0, y:0};
 
-    // Audio Engine
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function beep(freq, type, len) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -247,11 +228,10 @@
     }
     const SFX = {
         tick: () => beep(800, 'sine', 0.05),
-        bad:  () => beep(150, 'sawtooth', 0.4), // Fout geluid
+        bad:  () => beep(150, 'sawtooth', 0.4),
         win:  () => { [500,600,700,800,1000].forEach((f,i)=>setTimeout(()=>beep(f,'square',0.2), i*100)); }
     };
 
-    // --- INIT ---
     function init() {
         const grid = document.getElementById('calendar');
         grid.innerHTML = '';
@@ -302,7 +282,7 @@
             {t: "Zoek Venom 👀", d: "Het krioelt van de spinnen! Tik alleen op VENOM (de zwarte). Tik je een spin? Score 0!"},
             {t: "Web Blaster 🕸️", d: "Schiet de boeven neer! Raak GEEN bommen!"},
             {t: "Het Doolhof 🗺️", d: "Gebruik de pijltjes om Spidey naar de vlag te brengen."},
-            {t: "Vang de Spullen 🩳", d: "Vang zwembroeken en ballen. Vang GEEN spinnen (Score 0)!"},
+            {t: "Vang de Spullen 🩳", d: "Vang zwembroeken, ijsjes en ballen. PAS OP: De spullen vallen steeds sneller. Vang GEEN bommen!"},
             {t: "Spidey Memory 🧠", d: "Zoek de paren. De klok tikt!"}
         ];
 
@@ -398,7 +378,7 @@
         if(confirm("Alles wissen?")) { localStorage.clear(); location.reload(); }
     }
 
-    // --- GAME 1: NINJA (Swipe + Punish) ---
+    // --- GAME 1: NINJA ---
     function initNinja(canvas) {
         canvas.onpointermove = (e) => {
             if(!isGameRunning) return;
@@ -412,12 +392,9 @@
                 const oy = (oRect.top - rect.top) + oRect.height/2;
                 if(Math.hypot(ox - x, oy - y) < 60) {
                     obj.remove();
-                    if(obj.dataset.type === 'bad') {
-                        punish();
-                    } else {
-                        SFX.tick();
-                        score++;
-                        updateHUD();
+                    if(obj.dataset.type === 'bad') punish();
+                    else {
+                        SFX.tick(); score++; updateHUD();
                         if(score >= TOTAL_GOAL) triggerWin();
                     }
                 }
@@ -428,7 +405,7 @@
             if(!isGameRunning) return;
             const el = document.createElement('div');
             el.className = 'flying-obj';
-            const isBad = Math.random() > 0.7; // 30% kans op web
+            const isBad = Math.random() > 0.7; 
             el.innerText = isBad ? '🕸️' : '🎃';
             el.dataset.type = isBad ? 'bad' : 'good';
             el.style.left = '-60px';
@@ -443,13 +420,12 @@
         spawn();
     }
 
-    // --- GAME 2: ZOEK VENOM (Veel spinnen + Punish) ---
+    // --- GAME 2: ZOEK VENOM ---
     function initSearch(canvas) {
         function round() {
             if(!isGameRunning) return;
             canvas.innerHTML = '';
             
-            // 40 Spinnen!
             for(let i=0; i<40; i++) {
                 const d = document.createElement('div');
                 d.className = 'target'; d.innerText = '🕷️';
@@ -462,7 +438,7 @@
             }
 
             const t = document.createElement('div');
-            t.className = 'target'; t.innerText = '👺'; // Venom/Goblin
+            t.className = 'target'; t.innerText = '👺'; 
             t.style.fontSize = '60px'; t.style.zIndex = 10;
             t.style.left = Math.random() * 85 + '%';
             t.style.top = Math.random() * 85 + '%';
@@ -475,7 +451,7 @@
         round();
     }
 
-    // --- GAME 3: WEB BLASTER (Vervangt Auto Was) ---
+    // --- GAME 3: SHOOTER ---
     function initShooter(canvas) {
         function spawnTarget() {
             if(!isGameRunning) return;
@@ -486,15 +462,13 @@
             t.style.left = Math.random() * 80 + '%';
             t.style.top = Math.random() * 80 + '%';
             
-            // Verdwijnt snel
             let life = setTimeout(() => { if(t.parentNode) t.remove(); spawnTarget(); }, 900);
 
             t.onpointerdown = (e) => {
                 e.preventDefault(); clearTimeout(life);
                 t.remove();
-                if(isBad) {
-                    punish();
-                } else {
+                if(isBad) punish();
+                else {
                     SFX.tick(); score++; updateHUD();
                     if(score >= TOTAL_GOAL) triggerWin();
                 }
@@ -505,23 +479,16 @@
         spawnTarget();
     }
 
-    // --- GAME 4: DOOLHOF (Nieuw) ---
+    // --- GAME 4: DOOLHOF ---
     function initMaze(canvas) {
         document.getElementById('mazeControls').style.display = 'grid';
         canvas.innerHTML = '<div class="maze-grid" id="mazeGrid"></div>';
         const gridEl = document.getElementById('mazeGrid');
         
-        // 8x8 Grid. 0=pad, 1=muur, 2=start, 3=finish
         gridEl.style.gridTemplateColumns = 'repeat(8, 1fr)';
         const map = [
-            [2,0,0,1,0,0,0,0],
-            [1,1,0,1,0,1,1,1],
-            [0,0,0,0,0,0,0,0],
-            [0,1,1,1,1,1,1,0],
-            [0,0,0,0,0,0,1,0],
-            [1,1,1,1,0,1,1,0],
-            [0,0,0,1,0,0,0,0],
-            [0,1,0,0,0,1,1,3]
+            [2,0,0,1,0,0,0,0], [1,1,0,1,0,1,1,1], [0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,0],
+            [0,0,0,0,0,0,1,0], [1,1,1,1,0,1,1,0], [0,0,0,1,0,0,0,0], [0,1,0,0,0,1,1,3]
         ];
         
         for(let y=0; y<8; y++) {
@@ -542,9 +509,8 @@
         if(!isGameRunning || activeGameIdx !== 4) return;
         const nx = activeMazePos.x + dx; const ny = activeMazePos.y + dy;
         if(nx<0||nx>7||ny<0||ny>7) return;
-        if(window.mazeMap[ny][nx]===1) { SFX.bad(); return; } // Muur
+        if(window.mazeMap[ny][nx]===1) { SFX.bad(); return; }
         
-        // Clear old
         document.getElementById(`mc_${activeMazePos.x}_${activeMazePos.y}`).innerText = '';
         activeMazePos = {x:nx, y:ny};
         renderMazePlayer();
@@ -553,16 +519,20 @@
     };
 
     function renderMazePlayer() {
-        const c = document.getElementById(`mc_${activeMazePos.x}_${activeMazePos.y}`);
-        c.innerText = '🕷️';
+        document.getElementById(`mc_${activeMazePos.x}_${activeMazePos.y}`).innerText = '🕷️';
     }
 
-    // --- GAME 5: VANGEN (Meer vijanden) ---
+    // --- GAME 5: VANGEN (NIEUWE VERSIE 7.0) ---
     function initCatcher(canvas) {
         const basket = document.createElement('div');
         basket.innerText = '🕸️'; basket.className = 'target'; 
         basket.style.fontSize = '80px'; basket.style.bottom = '10px';
         canvas.appendChild(basket);
+
+        // Good items: Zwembroek, Bal, Ijsje, Pizza, Koffer
+        const goods = ['🩳', '⚽', '🍦', '🍕', '🧳', '🏊'];
+        // Bad items: Spin, Bom, Goblin, Web, Vuur
+        const bads = ['🕷️', '💣', '👺', '🕸️', '🔥'];
 
         canvas.onpointermove = (e) => {
             const r = canvas.getBoundingClientRect();
@@ -574,18 +544,28 @@
         function drop() {
             if(!isGameRunning) return;
             const item = document.createElement('div');
-            // 40% kans op slechterik
+            
+            // 40% kans op vijand
             const isBad = Math.random() > 0.6;
-            item.innerText = isBad ? '🕷️' : '🩳';
+            item.innerText = isBad ? bads[Math.floor(Math.random()*bads.length)] : goods[Math.floor(Math.random()*goods.length)];
             item.className = 'target'; item.style.fontSize = '50px';
-            item.style.top = '-50px'; item.style.left = Math.random() * 90 + '%';
+            
+            // Random startpositie en Random SNELHEID
+            item.style.top = '-60px'; 
+            item.style.left = Math.random() * 90 + '%';
+            
+            // Snelheid variëren: tussen 4 en 10
+            const speed = 4 + Math.random() * 6;
+            
             canvas.appendChild(item);
 
-            let pos = -50;
+            let pos = -60;
             const fall = setInterval(() => {
                 if(!isGameRunning) { clearInterval(fall); return; }
-                pos += 4; item.style.top = pos + 'px';
+                pos += speed; // Gebruik de random snelheid
+                item.style.top = pos + 'px';
                 
+                // Botsing check
                 if(pos > canvas.clientHeight - 80) {
                     const bx = parseFloat(basket.style.left);
                     const ix = parseFloat(item.style.left)/100 * canvas.clientWidth;
@@ -599,13 +579,15 @@
                     }
                 }
                 if(pos > canvas.clientHeight) { item.remove(); clearInterval(fall); }
-            }, 20);
-            setTimeout(drop, 600); // Sneller
+            }, 20); // 50 fps
+            
+            // Nieuwe drop steeds sneller (tussen 400ms en 800ms)
+            setTimeout(drop, 400 + Math.random() * 400); 
         }
         drop();
     }
 
-    // --- GAME 6: MEMORY (Fix + 6 paren) ---
+    // --- GAME 6: MEMORY ---
     function initMemory(canvas) {
         canvas.innerHTML = '<div class="mem-grid" id="memGrid"></div>';
         const grid = document.getElementById('memGrid');
@@ -615,8 +597,7 @@
 
         deck.forEach(i => {
             const c = document.createElement('div');
-            c.className = 'mem-card';
-            c.dataset.v = i;
+            c.className = 'mem-card'; c.dataset.v = i;
             c.onclick = () => {
                 if(lock || c===first || c.classList.contains('matched')) return;
                 c.classList.add('flipped'); c.innerText = i;
@@ -624,16 +605,13 @@
                 else {
                     lock = true;
                     if(first.dataset.v === i) {
-                        SFX.tick();
-                        first.classList.add('matched'); c.classList.add('matched');
-                        score++; updateHUD();
-                        first=null; lock=false;
+                        SFX.tick(); first.classList.add('matched'); c.classList.add('matched');
+                        score++; updateHUD(); first=null; lock=false;
                         if(score===6) triggerWin();
                     } else {
                         setTimeout(()=>{
                             first.classList.remove('flipped'); c.classList.remove('flipped');
-                            first.innerText=''; c.innerText='';
-                            first=null; lock=false;
+                            first.innerText=''; c.innerText=''; first=null; lock=false;
                         }, 800);
                     }
                 }
