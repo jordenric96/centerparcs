@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="Spidey Lou">
     <link rel="manifest" href="manifest.json">
 
-    <title>Lou's Center Parcs Games</title>
+    <title>Lou's Spidey Games</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;900&display=swap');
 
@@ -25,46 +25,46 @@
         body {
             background-color: var(--blue);
             font-family: 'Roboto', sans-serif;
-            margin: 0; padding: 10px;
+            margin: 0; padding: 0;
             color: white; text-align: center;
-            overflow: hidden; /* Geen scrollbalken in de app */
+            overflow: hidden; 
             background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
             background-size: 30px 30px;
             height: 100vh; display: flex; flex-direction: column;
         }
 
         /* HEADER */
+        header { padding: 10px; background: rgba(0,0,0,0.2); }
         h1 {
-            font-family: 'Bangers', cursive; font-size: 2.5rem; margin: 5px 0;
-            color: var(--red); text-shadow: 2px 2px 0 #fff; letter-spacing: 2px;
+            font-family: 'Bangers', cursive; font-size: 2rem; margin: 0;
+            color: var(--red); text-shadow: 2px 2px 0 #fff; letter-spacing: 1px;
         }
-        .subtitle { font-size: 1rem; margin-bottom: 10px; color: #ccc; }
 
         /* KALENDER GRID */
         #calendarContainer {
-            flex-grow: 1; overflow-y: auto; touch-action: pan-y; /* Hier wel scrollen */
-            padding-bottom: 50px;
+            flex-grow: 1; overflow-y: auto; touch-action: pan-y; 
+            padding: 20px; padding-bottom: 80px;
         }
 
         .calendar-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 15px; max-width: 900px; margin: 0 auto; padding: 10px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px; max-width: 900px; margin: 0 auto;
         }
 
         .day-card {
             background: white; border: 4px solid var(--dark); border-radius: 15px;
-            height: 110px; display: flex; flex-direction: column;
+            height: 120px; display: flex; flex-direction: column;
             justify-content: center; align-items: center; position: relative;
-            color: var(--dark); box-shadow: 0 5px 0 var(--dark);
+            color: var(--dark); box-shadow: 0 6px 0 var(--dark);
             transition: transform 0.1s;
         }
-        .day-card:active { transform: translateY(5px); box-shadow: none; }
+        .day-card:active { transform: translateY(6px); box-shadow: none; }
         
-        .date-number { font-family: 'Bangers'; font-size: 2.8rem; line-height: 1; color: var(--blue); }
+        .date-number { font-family: 'Bangers'; font-size: 3rem; line-height: 1; color: var(--blue); }
         .day-text { font-weight: bold; font-size: 0.9rem; text-transform: uppercase;}
         
         /* Statussen */
-        .locked { filter: grayscale(1); opacity: 0.6; background: #ddd; pointer-events: none;}
+        .locked { filter: grayscale(1); opacity: 0.5; background: #ccc; pointer-events: none;}
         .active-day { border-color: var(--red); animation: pulse 1.5s infinite; background: #fff; cursor: pointer;}
         .completed { background: #bbf7d0; border-color: #166534; color: #166534; opacity: 0.9; }
         .completed::after { content: "✅"; position: absolute; font-size: 3rem; opacity: 0.8; }
@@ -72,7 +72,7 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-        /* POPUPS & MODALS */
+        /* MODALS */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 1000;
@@ -80,24 +80,22 @@
         }
 
         .instruction-box {
-            background: #fff; color: #000; padding: 25px; border-radius: 20px;
+            background: #fff; color: #000; padding: 20px; border-radius: 20px;
             width: 90%; max-width: 500px; text-align: center; border: 6px solid var(--red);
-            position: relative;
         }
-
-        .game-title { font-family: 'Bangers'; font-size: 2rem; color: var(--blue); margin-bottom: 10px; }
-        .game-desc { font-size: 1.2rem; line-height: 1.5; margin-bottom: 20px; }
+        .game-title { font-family: 'Bangers'; font-size: 2.2rem; color: var(--blue); margin-bottom: 10px; }
+        .game-desc { font-size: 1.2rem; line-height: 1.4; margin-bottom: 20px; }
 
         /* GAME UI */
         #gameUI {
             width: 100%; height: 100%; display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start; padding: 10px;
+            align-items: center; padding: 10px;
         }
 
         .hud-bar {
-            display: flex; justify-content: space-between; width: 100%; max-width: 800px;
-            background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 50px;
-            margin-bottom: 10px; border: 2px solid white;
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; max-width: 800px; background: rgba(0,0,0,0.6); 
+            padding: 5px 20px; border-radius: 50px; margin-bottom: 10px; border: 2px solid white;
         }
         
         .score-box { font-family: 'Bangers'; font-size: 1.8rem; color: var(--gold); }
@@ -109,68 +107,82 @@
             overflow: hidden; touch-action: none;
         }
 
-        /* Controls & Buttons */
+        /* Buttons */
         .btn {
-            background: var(--red); color: white; border: none; padding: 15px 40px;
-            font-family: 'Bangers'; font-size: 1.8rem; border-radius: 50px;
-            cursor: pointer; box-shadow: 0 6px 0 #8b0000; display: inline-block; margin: 10px;
+            background: var(--red); color: white; border: none; padding: 15px 30px;
+            font-family: 'Bangers'; font-size: 1.5rem; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 5px 0 #8b0000; margin: 10px;
         }
-        .btn:active { transform: translateY(6px); box-shadow: none; }
-        .btn-close { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 50%; padding:0; font-size: 1.5rem; line-height: 40px;}
+        .btn:active { transform: translateY(5px); box-shadow: none; }
+        .btn-close { 
+            background: #d32f2f; width: 40px; height: 40px; border-radius: 50%; 
+            padding: 0; font-size: 1.2rem; line-height: 40px; border: 2px solid white;
+        }
 
-        /* WIN SCREEN */
-        .win-time { font-size: 2rem; font-weight: bold; color: var(--blue); margin: 10px 0; }
+        /* --- GAME ELEMENTS --- */
+        
+        /* Memory Fix */
+        .mem-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            grid-template-rows: repeat(3, 1fr); /* Forceer hoogte */
+            gap: 10px; width: 100%; height: 100%; padding: 10px; 
+        }
+        .mem-card { 
+            background: var(--blue); border-radius: 8px; border: 3px solid white; 
+            display: flex; justify-content: center; align-items: center; font-size: 0;
+            width: 100%; height: 100%; /* Vul cel */
+        }
+        .mem-card.flipped { background: white; font-size: 3.5rem; transform: rotateY(180deg); transition: transform 0.3s;}
+
+        /* Maze */
+        .maze-grid { display: grid; width: 100%; height: 100%; }
+        .maze-cell { border: 1px solid #333; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;}
+        .maze-controls { 
+            display: none; width: 100%; max-width: 300px; margin-top: 10px; 
+            grid-template-columns: repeat(3, 1fr); gap: 10px; 
+        }
+        .arrow-btn { 
+            background: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 10px; 
+            height: 60px; font-size: 30px; display: flex; justify-content: center; align-items: center;
+        }
+        .arrow-btn:active { background: var(--red); }
+
+        /* Algemeen */
+        .target { position: absolute; user-select: none; }
+        .flying-obj { position: absolute; font-size: 3.5rem; pointer-events: none;}
+        
+        /* Win Screen */
+        .win-time { font-size: 2.5rem; font-weight: bold; color: var(--blue); margin: 15px 0; }
         .best-time { font-size: 1.2rem; color: #555; }
         .new-record { color: var(--red); font-weight: bold; animation: pulse 0.5s infinite; }
-
-        /* --- GAME ELEMENTS (CSS based) --- */
-        .target { position: absolute; user-select: none; }
-        .flying-obj { position: absolute; font-size: 3rem; transition: transform 0.1s; pointer-events: none;}
-        .slice-trail { position: absolute; height: 4px; background: white; pointer-events: none; border-radius: 2px; }
-        
-        /* Runner */
-        .runner-player { 
-            position: absolute; bottom: 20px; left: 50px; font-size: 3.5rem; 
-            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .runner-obstacle { position: absolute; bottom: 20px; font-size: 3rem; }
-
-        /* Car Wash */
-        .dirty-spot { 
-            position: absolute; width: 50px; height: 50px; background: #5d4037; 
-            border-radius: 50%; opacity: 0.9; cursor: crosshair;
-        }
-        
-        /* Catch */
-        .basket { position: absolute; bottom: 10px; font-size: 4rem; transition: left 0.05s; }
-        .falling-item { position: absolute; font-size: 3rem; }
-
-        /* Memory */
-        .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; height: 100%; padding: 20px; align-content: center;}
-        .mem-card { background: var(--blue); border-radius: 8px; border: 2px solid white; display: flex; justify-content: center; align-items: center; font-size: 0;}
-        .mem-card.flipped { background: white; font-size: 3rem; transform: rotateY(180deg); transition: transform 0.3s;}
-
         .confetti { position: absolute; width: 10px; height: 10px; pointer-events: none; }
+        
+        /* Score Reset Effect */
+        .shake-screen { animation: shake 0.5s; }
+        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+
     </style>
 </head>
 <body>
 
-    <h1>LOU & SPIDEY</h1>
-    <div class="subtitle">Aftellen naar Center Parcs!</div>
+    <header>
+        <h1>LOU'S SPIDEY APP</h1>
+    </header>
     
     <div id="calendarContainer">
         <div id="calendar" class="calendar-grid"></div>
-        <div style="margin-top:30px;">
-            <button class="btn" style="background:#555; font-size:1rem; padding:10px 20px;" onclick="resetAll()">⚙️ Reset App</button>
+        <div style="margin-top:40px;">
+            <button class="btn" style="background:#555; font-size:0.8rem; padding:10px;" onclick="resetAll()">⚙️ Reset App</button>
         </div>
     </div>
 
     <div id="introModal" class="modal">
         <div class="instruction-box">
-            <button class="btn btn-close" onclick="closeModal('introModal')">✕</button>
-            <div id="introTitle" class="game-title">Spel Titel</div>
-            <div id="introText" class="game-desc">Uitleg...</div>
-            <button class="btn" onclick="startGame()">START DE TIJD!</button>
+            <button class="btn btn-close" style="position:absolute; right:-10px; top:-10px;" onclick="closeModal('introModal')">✕</button>
+            <div id="introTitle" class="game-title">Titel</div>
+            <div id="introText" class="game-desc">Uitleg</div>
+            <button class="btn" onclick="startGame()">START!</button>
         </div>
     </div>
 
@@ -179,12 +191,18 @@
             <div class="hud-bar">
                 <div id="scoreVal" class="score-box">0 / 10</div>
                 <div id="timerVal" class="timer-box">0.0s</div>
-                <button class="btn btn-close" style="position:static; margin:0;" onclick="quitGame()">✕</button>
+                <button class="btn btn-close" onclick="quitGame()">✕</button>
             </div>
-            <div id="gameCanvas">
-                </div>
-            <div id="gameControls" style="height: 80px; width:100%; display:none; justify-content:center;">
-                <button id="actionBtn" class="btn" style="width:100%; height:100%; margin:0;">SPRING!</button>
+            
+            <div id="gameCanvas"></div>
+
+            <div id="mazeControls" class="maze-controls">
+                <div></div>
+                <div class="arrow-btn" onpointerdown="handleMazeMove(0, -1)">⬆️</div>
+                <div></div>
+                <div class="arrow-btn" onpointerdown="handleMazeMove(-1, 0)">⬅️</div>
+                <div class="arrow-btn" onpointerdown="handleMazeMove(0, 1)">⬇️</div>
+                <div class="arrow-btn" onpointerdown="handleMazeMove(1, 0)">➡️</div>
             </div>
         </div>
     </div>
@@ -192,22 +210,19 @@
     <div id="winModal" class="modal">
         <div class="instruction-box" style="border-color: var(--gold);">
             <div class="game-title">🎉 GEWONNEN! 🎉</div>
-            <div class="game-desc">Je hebt het gehaald!</div>
-            
-            <div class="win-time" id="finalTimeDisplay">12.5s</div>
-            <div class="best-time" id="bestTimeDisplay">Record: 14.2s</div>
-            
+            <div class="win-time" id="finalTimeDisplay">0.0s</div>
+            <div class="best-time" id="bestTimeDisplay">Record: 0.0s</div>
             <button class="btn" onclick="finishDay()">MISSIE VOLTOOID</button>
         </div>
     </div>
 
 <script>
     // --- CONFIGURATIE ---
-    // ZET DIT OP 'false' ALS DE DAGEN ECHT GEBLOKKEERD MOETEN ZIJN
+    // ZET OP 'false' ALS JE KLAAR BENT MET TESTEN!
     const TEST_MODE = true; 
     
-    const TARGET_DATE = new Date(2026, 1, 2); // 2 Feb
-    const TOTAL_GOAL = 10; // Alles gaat tot 10
+    const TARGET_DATE = new Date(2026, 1, 2); 
+    const TOTAL_GOAL = 10;
     
     // Globals
     let activeGameIdx = 0;
@@ -215,13 +230,12 @@
     let score = 0;
     let startTime = 0;
     let timerInterval = null;
-    let gameLoopRef = null;
     let isGameRunning = false;
-    let touchX = 0; // Voor swipen/draggen
+    let activeMazePos = {x:0, y:0};
 
-    // Audio
+    // Audio Engine
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function beep(freq = 600, type = 'sine', len = 0.1) {
+    function beep(freq, type, len) {
         if(audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -233,56 +247,41 @@
     }
     const SFX = {
         tick: () => beep(800, 'sine', 0.05),
-        hit: () => beep(400, 'square', 0.1),
-        jump: () => beep(300, 'sawtooth', 0.2),
-        win: () => { 
-            [500,600,700,800,1000].forEach((f,i)=>setTimeout(()=>beep(f,'square',0.2), i*100)); 
-        }
+        bad:  () => beep(150, 'sawtooth', 0.4), // Fout geluid
+        win:  () => { [500,600,700,800,1000].forEach((f,i)=>setTimeout(()=>beep(f,'square',0.2), i*100)); }
     };
 
-    // --- INITIALISATIE ---
+    // --- INIT ---
     function init() {
-        renderCalendar();
-    }
-
-    function renderCalendar() {
         const grid = document.getElementById('calendar');
         grid.innerHTML = '';
-        
-        let loopDate = new Date(); // Begin vandaag
-        // Simpelheidshalve renderen we 12 dagen (of tot target)
-        for(let i=0; i<12; i++) {
-            let d = new Date(loopDate);
-            d.setDate(d.getDate() + i);
+        let loopDate = new Date(); 
+        for(let i=0; i<15; i++) {
+            let d = new Date(loopDate); d.setDate(d.getDate() + i);
             if(d > TARGET_DATE) break;
-            
             createDayCard(d, grid);
         }
     }
 
     function createDayCard(date, container) {
         const today = new Date(); today.setHours(0,0,0,0);
-        const cardDate = new Date(date); cardDate.setHours(0,0,0,0);
-        
+        const cDate = new Date(date); cDate.setHours(0,0,0,0);
         const dateId = `lou_${date.getDate()}_${date.getMonth()}`;
         const isDone = localStorage.getItem(dateId + '_done') === 'true';
-        const isFuture = cardDate > today;
+        const isFuture = cDate > today;
         const isTarget = date.getDate() === 2 && date.getMonth() === 1;
 
         let status = '';
         if(isDone) status = 'completed';
         else if(isFuture && !TEST_MODE) status = 'locked';
         else status = 'active-day';
-
         if(isTarget) status += ' final-day';
 
         const el = document.createElement('div');
         el.className = `day-card ${status}`;
-        el.innerHTML = `
-            <div class="day-text">${date.toLocaleDateString('nl-NL', {weekday:'short'})}</div>
-            <div class="date-number">${date.getDate()}</div>
-            <div class="day-text">${date.toLocaleDateString('nl-NL', {month:'short'})}</div>
-        `;
+        el.innerHTML = `<div class="day-text">${date.toLocaleDateString('nl-NL',{weekday:'short'})}</div>
+                        <div class="date-number">${date.getDate()}</div>
+                        <div class="day-text">${date.toLocaleDateString('nl-NL',{month:'short'})}</div>`;
 
         if(status.includes('active-day') || status.includes('completed') || status.includes('final-day')) {
             el.onclick = () => openIntro(date, dateId);
@@ -290,40 +289,25 @@
         container.appendChild(el);
     }
 
-    // --- MENU FLOW ---
     function openIntro(date, dateId) {
         if(date.getDate() === 2 && date.getMonth() === 1) {
-            alert("HOERA! VANDAAG GAAN WE! 🚗💨");
-            SFX.win();
-            return;
+            alert("HOERA! CENTER PARCS! 🚗💨"); SFX.win(); return;
         }
-
         activeDateId = dateId;
-        // Game index 1-6 op basis van dag
         activeGameIdx = (date.getDate() % 6) + 1;
         
-        const titles = [
-            "", 
-            "Pumpkin Ninja 🎃", 
-            "Zoek Venom 👀", 
-            "Center Parcs Car Wash 🚗", 
-            "Spidey Run 🏃", 
-            "Vang de Spullen 🩳", 
-            "Spidey Memory 🧠"
-        ];
-        
-        const descs = [
-            "",
-            "Veeg over het scherm om de pompoenen door midden te hakken! Raak er 10.",
-            "Er verschijnen 10 keer plaatjes. Tik zo snel mogelijk op Venom (de zwarte)!",
-            "De auto is vies! Wrijf met je vinger over de modder om hem schoon te maken.",
-            "Ren door het bos! Tik op het scherm om over de obstakels te springen.",
-            "Vang 10 vakantiespullen (zwembroek, bal) met Spidey. Ontwijk de spinnen!",
-            "Zoek de 6 paren bij elkaar. Hoe snel ben jij?"
+        const info = [
+            null,
+            {t: "Pumpkin Ninja 🎃", d: "Hak de pompoenen! Raak GEEN webben, want dan begint je score opnieuw!"},
+            {t: "Zoek Venom 👀", d: "Het krioelt van de spinnen! Tik alleen op VENOM (de zwarte). Tik je een spin? Score 0!"},
+            {t: "Web Blaster 🕸️", d: "Schiet de boeven neer! Raak GEEN bommen!"},
+            {t: "Het Doolhof 🗺️", d: "Gebruik de pijltjes om Spidey naar de vlag te brengen."},
+            {t: "Vang de Spullen 🩳", d: "Vang zwembroeken en ballen. Vang GEEN spinnen (Score 0)!"},
+            {t: "Spidey Memory 🧠", d: "Zoek de paren. De klok tikt!"}
         ];
 
-        document.getElementById('introTitle').innerText = titles[activeGameIdx];
-        document.getElementById('introText').innerText = descs[activeGameIdx];
+        document.getElementById('introTitle').innerText = info[activeGameIdx].t;
+        document.getElementById('introText').innerText = info[activeGameIdx].d;
         document.getElementById('introModal').style.display = 'flex';
     }
 
@@ -332,53 +316,58 @@
     function startGame() {
         closeModal('introModal');
         document.getElementById('gameModal').style.display = 'flex';
-        document.getElementById('gameControls').style.display = 'none'; // Standaard uit
+        document.getElementById('mazeControls').style.display = 'none';
         
         isGameRunning = true;
         score = 0;
         updateHUD();
         
-        // Timer Reset
         startTime = Date.now();
         timerInterval = setInterval(() => {
             const delta = (Date.now() - startTime) / 1000;
             document.getElementById('timerVal').innerText = delta.toFixed(1) + 's';
         }, 100);
 
-        // Start Specifieke Game
-        const canvas = document.getElementById('gameCanvas');
-        canvas.innerHTML = ''; // Clear
+        const cvs = document.getElementById('gameCanvas');
+        cvs.innerHTML = '';
         
-        if(activeGameIdx === 1) initNinja(canvas);
-        if(activeGameIdx === 2) initSearch(canvas);
-        if(activeGameIdx === 3) initCarWash(canvas);
-        if(activeGameIdx === 4) initRunner(canvas);
-        if(activeGameIdx === 5) initCatcher(canvas);
-        if(activeGameIdx === 6) initMemory(canvas);
+        if(activeGameIdx === 1) initNinja(cvs);
+        if(activeGameIdx === 2) initSearch(cvs);
+        if(activeGameIdx === 3) initShooter(cvs);
+        if(activeGameIdx === 4) initMaze(cvs);
+        if(activeGameIdx === 5) initCatcher(cvs);
+        if(activeGameIdx === 6) initMemory(cvs);
     }
 
     function quitGame() {
         isGameRunning = false;
         clearInterval(timerInterval);
-        cancelAnimationFrame(gameLoopRef);
         document.getElementById('gameModal').style.display = 'none';
     }
 
     function updateHUD() {
-        document.getElementById('scoreVal').innerText = `${score} / ${TOTAL_GOAL}`;
-        if(activeGameIdx === 6) document.getElementById('scoreVal').innerText = `${score} / 6 Paren`;
+        let max = TOTAL_GOAL;
+        if(activeGameIdx === 4) max = "Vlag";
+        if(activeGameIdx === 6) max = "6 Paren";
+        document.getElementById('scoreVal').innerText = `${score} / ${max}`;
+    }
+
+    function punish() {
+        SFX.bad();
+        score = 0;
+        updateHUD();
+        const ui = document.getElementById('gameUI');
+        ui.classList.add('shake-screen');
+        setTimeout(() => ui.classList.remove('shake-screen'), 500);
     }
 
     function triggerWin() {
         if(!isGameRunning) return;
         isGameRunning = false;
         clearInterval(timerInterval);
-        cancelAnimationFrame(gameLoopRef);
         
         const finalTime = ((Date.now() - startTime) / 1000).toFixed(1);
-        
-        // Highscore Logic
-        const storeKey = `highscore_game_${activeGameIdx}`;
+        const storeKey = `hs_game_${activeGameIdx}`;
         const oldBest = parseFloat(localStorage.getItem(storeKey)) || 999;
         let isRecord = false;
         
@@ -387,10 +376,9 @@
             isRecord = true;
         }
 
-        // Show Win Modal
         document.getElementById('gameModal').style.display = 'none';
         document.getElementById('winModal').style.display = 'flex';
-        document.getElementById('finalTimeDisplay').innerText = `Jouw tijd: ${finalTime}s`;
+        document.getElementById('finalTimeDisplay').innerText = `Tijd: ${finalTime}s`;
         
         const bestDisplay = isRecord ? "NIEUW RECORD!" : `Record: ${oldBest}s`;
         document.getElementById('bestTimeDisplay').innerText = bestDisplay;
@@ -403,45 +391,35 @@
     function finishDay() {
         localStorage.setItem(activeDateId + '_done', 'true');
         closeModal('winModal');
-        init(); // Refresh kalender
+        init(); 
     }
 
     function resetAll() {
-        if(confirm("Alles wissen?")) {
-            localStorage.clear();
-            location.reload();
-        }
+        if(confirm("Alles wissen?")) { localStorage.clear(); location.reload(); }
     }
 
-    // ---------------- DE 6 GAMES ----------------
-
-    // 1. NINJA (Swipe events)
+    // --- GAME 1: NINJA (Swipe + Punish) ---
     function initNinja(canvas) {
-        let spawnTimer;
-        
-        // Track mouse/touch trail
         canvas.onpointermove = (e) => {
             if(!isGameRunning) return;
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             
-            // Check collisions with flying objects
             document.querySelectorAll('.flying-obj').forEach(obj => {
                 const oRect = obj.getBoundingClientRect();
-                const cRect = canvas.getBoundingClientRect(); // Relatief rekenen
-                
-                // Simpele afstand check
-                const ox = (oRect.left - cRect.left) + oRect.width/2;
-                const oy = (oRect.top - cRect.top) + oRect.height/2;
-                
-                const dist = Math.hypot(ox - x, oy - y);
-                if(dist < 50) {
+                const ox = (oRect.left - rect.left) + oRect.width/2;
+                const oy = (oRect.top - rect.top) + oRect.height/2;
+                if(Math.hypot(ox - x, oy - y) < 60) {
                     obj.remove();
-                    SFX.hit();
-                    score++;
-                    updateHUD();
-                    if(score >= TOTAL_GOAL) triggerWin();
+                    if(obj.dataset.type === 'bad') {
+                        punish();
+                    } else {
+                        SFX.tick();
+                        score++;
+                        updateHUD();
+                        if(score >= TOTAL_GOAL) triggerWin();
+                    }
                 }
             });
         };
@@ -450,322 +428,235 @@
             if(!isGameRunning) return;
             const el = document.createElement('div');
             el.className = 'flying-obj';
-            el.innerText = Math.random() > 0.5 ? '🎃' : '🕸️';
-            el.style.left = '-50px';
+            const isBad = Math.random() > 0.7; // 30% kans op web
+            el.innerText = isBad ? '🕸️' : '🎃';
+            el.dataset.type = isBad ? 'bad' : 'good';
+            el.style.left = '-60px';
             el.style.top = Math.random() * 80 + '%';
             canvas.appendChild(el);
 
-            // Animate via Web Animations API (gladder)
-            const anim = el.animate([
-                { transform: 'translateX(0) rotate(0deg)' },
-                { transform: `translateX(${canvas.clientWidth + 100}px) rotate(360deg)` }
-            ], {
-                duration: 2000 + Math.random() * 1000,
-                easing: 'linear'
-            });
-
-            anim.onfinish = () => { if(el.parentNode) el.remove(); };
+            el.animate([{transform:'translateX(0)'}, {transform:`translateX(${canvas.clientWidth+100}px)`}], 
+                {duration: 2500, easing:'linear'}).onfinish = () => el.remove();
             
-            spawnTimer = setTimeout(spawn, 800);
+            setTimeout(spawn, 700);
         }
         spawn();
     }
 
-    // 2. ZOEK VENOM (Tap Target)
+    // --- GAME 2: ZOEK VENOM (Veel spinnen + Punish) ---
     function initSearch(canvas) {
-        function nextRound() {
+        function round() {
             if(!isGameRunning) return;
             canvas.innerHTML = '';
             
-            // Maak afleiding
-            for(let i=0; i<15; i++) {
-                const dummy = document.createElement('div');
-                dummy.className = 'target';
-                dummy.innerText = '🕷️';
-                dummy.style.fontSize = '40px';
-                dummy.style.left = Math.random() * 90 + '%';
-                dummy.style.top = Math.random() * 90 + '%';
-                canvas.appendChild(dummy);
+            // 40 Spinnen!
+            for(let i=0; i<40; i++) {
+                const d = document.createElement('div');
+                d.className = 'target'; d.innerText = '🕷️';
+                d.style.fontSize = '30px';
+                d.style.left = Math.random() * 90 + '%';
+                d.style.top = Math.random() * 90 + '%';
+                d.style.opacity = '0.7';
+                d.onpointerdown = (e) => { e.stopPropagation(); punish(); round(); };
+                canvas.appendChild(d);
             }
 
-            // De Target
-            const target = document.createElement('div');
-            target.className = 'target';
-            target.innerText = '🦸‍♂️'; // Of Venom, wat je wil
-            target.style.fontSize = '50px';
-            target.style.left = Math.random() * 85 + '%';
-            target.style.top = Math.random() * 85 + '%';
-            target.style.filter = 'drop-shadow(0 0 5px white)';
-            
-            target.onpointerdown = (e) => {
-                e.stopPropagation();
-                SFX.tick();
-                score++;
-                updateHUD();
-                if(score >= TOTAL_GOAL) triggerWin();
-                else nextRound();
+            const t = document.createElement('div');
+            t.className = 'target'; t.innerText = '👺'; // Venom/Goblin
+            t.style.fontSize = '60px'; t.style.zIndex = 10;
+            t.style.left = Math.random() * 85 + '%';
+            t.style.top = Math.random() * 85 + '%';
+            t.onpointerdown = (e) => {
+                e.stopPropagation(); SFX.tick(); score++; updateHUD();
+                if(score >= TOTAL_GOAL) triggerWin(); else round();
             };
-            canvas.appendChild(target);
+            canvas.appendChild(t);
         }
-        nextRound();
+        round();
     }
 
-    // 3. CAR WASH (Mud wiping)
-    function initCarWash(canvas) {
-        // Auto background
-        const car = document.createElement('div');
-        car.innerText = '🚗';
-        car.style.cssText = "font-size: 150px; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);";
-        canvas.appendChild(car);
-
-        // Mud Blobs
-        const blobs = [];
-        for(let i=0; i<30; i++) { // Meer blobs voor "100%" gevoel
-            const blob = document.createElement('div');
-            blob.className = 'dirty-spot';
-            blob.style.left = (20 + Math.random() * 60) + '%'; // Centraal
-            blob.style.top = (20 + Math.random() * 60) + '%';
-            
-            blob.onpointerover = () => {
-                if(blob.style.opacity > 0) {
-                    blob.style.opacity = 0;
-                    blob.style.pointerEvents = 'none';
-                    SFX.tick();
-                    checkClean();
-                }
-            };
-            canvas.appendChild(blob);
-            blobs.push(blob);
-        }
-
-        // Touch support for swiping over elements
-        canvas.onpointermove = (e) => {
-            const el = document.elementFromPoint(e.clientX, e.clientY);
-            if(el && el.classList.contains('dirty-spot')) {
-                 el.onpointerover();
-            }
-        };
-
-        function checkClean() {
-            const remaining = blobs.filter(b => b.style.opacity != 0).length;
-            const cleaned = 30 - remaining;
-            // Map 30 blobs to score 10
-            const newScore = Math.floor((cleaned / 30) * 10);
-            if(newScore > score) {
-                score = newScore;
-                updateHUD();
-            }
-            if(remaining === 0) triggerWin();
-        }
-    }
-
-    // 4. RUNNER (Jump)
-    function initRunner(canvas) {
-        document.getElementById('gameControls').style.display = 'flex';
-        
-        const player = document.createElement('div');
-        player.className = 'runner-player';
-        player.innerText = '🕷️';
-        canvas.appendChild(player);
-
-        let isJumping = false;
-        
-        // Jump Action
-        const jump = () => {
-            if(isJumping) return;
-            isJumping = true;
-            SFX.jump();
-            player.style.bottom = '150px';
-            setTimeout(() => {
-                player.style.bottom = '20px';
-                setTimeout(() => isJumping = false, 300);
-            }, 500);
-        };
-
-        document.getElementById('actionBtn').onclick = jump;
-        canvas.onpointerdown = jump;
-
-        function spawnObstacle() {
+    // --- GAME 3: WEB BLASTER (Vervangt Auto Was) ---
+    function initShooter(canvas) {
+        function spawnTarget() {
             if(!isGameRunning) return;
-            const obs = document.createElement('div');
-            obs.className = 'runner-obstacle';
-            obs.innerText = '🌲';
-            obs.style.left = '100%';
-            canvas.appendChild(obs);
+            const t = document.createElement('div');
+            const isBad = Math.random() > 0.7;
+            t.innerText = isBad ? '💣' : '🦹‍♂️';
+            t.className = 'target'; t.style.fontSize = '70px';
+            t.style.left = Math.random() * 80 + '%';
+            t.style.top = Math.random() * 80 + '%';
+            
+            // Verdwijnt snel
+            let life = setTimeout(() => { if(t.parentNode) t.remove(); spawnTarget(); }, 900);
 
-            // Move logic manual for collision detection
-            let pos = 100;
-            const moveInt = setInterval(() => {
-                if(!isGameRunning) { clearInterval(moveInt); return; }
-                pos -= 1.5; // Speed
-                obs.style.left = pos + '%';
-
-                // Collision
-                if(pos < 15 && pos > 5) { // In zone
-                     if(!isJumping) {
-                         // Hit! Reset score of straf?
-                         obs.innerText = '💥';
-                         SFX.hit();
-                     } else if (!obs.passed) {
-                         obs.passed = true;
-                         score++;
-                         updateHUD();
-                         SFX.tick();
-                         if(score >= TOTAL_GOAL) triggerWin();
-                     }
+            t.onpointerdown = (e) => {
+                e.preventDefault(); clearTimeout(life);
+                t.remove();
+                if(isBad) {
+                    punish();
+                } else {
+                    SFX.tick(); score++; updateHUD();
+                    if(score >= TOTAL_GOAL) triggerWin();
                 }
-
-                if(pos < -10) {
-                    obs.remove();
-                    clearInterval(moveInt);
-                }
-            }, 20);
-
-            setTimeout(spawnObstacle, 1500 + Math.random() * 1000);
+                spawnTarget();
+            };
+            canvas.appendChild(t);
         }
-        spawnObstacle();
+        spawnTarget();
     }
 
-    // 5. CATCHER (Drag)
+    // --- GAME 4: DOOLHOF (Nieuw) ---
+    function initMaze(canvas) {
+        document.getElementById('mazeControls').style.display = 'grid';
+        canvas.innerHTML = '<div class="maze-grid" id="mazeGrid"></div>';
+        const gridEl = document.getElementById('mazeGrid');
+        
+        // 8x8 Grid. 0=pad, 1=muur, 2=start, 3=finish
+        gridEl.style.gridTemplateColumns = 'repeat(8, 1fr)';
+        const map = [
+            [2,0,0,1,0,0,0,0],
+            [1,1,0,1,0,1,1,1],
+            [0,0,0,0,0,0,0,0],
+            [0,1,1,1,1,1,1,0],
+            [0,0,0,0,0,0,1,0],
+            [1,1,1,1,0,1,1,0],
+            [0,0,0,1,0,0,0,0],
+            [0,1,0,0,0,1,1,3]
+        ];
+        
+        for(let y=0; y<8; y++) {
+            for(let x=0; x<8; x++) {
+                const c = document.createElement('div');
+                c.className = 'maze-cell';
+                c.id = `mc_${x}_${y}`;
+                if(map[y][x]===1) c.style.background = '#444';
+                if(map[y][x]===3) c.innerText = '🏁';
+                gridEl.appendChild(c);
+                if(map[y][x]===2) { activeMazePos={x,y}; renderMazePlayer(); }
+            }
+        }
+        window.mazeMap = map;
+    }
+
+    window.handleMazeMove = (dx, dy) => {
+        if(!isGameRunning || activeGameIdx !== 4) return;
+        const nx = activeMazePos.x + dx; const ny = activeMazePos.y + dy;
+        if(nx<0||nx>7||ny<0||ny>7) return;
+        if(window.mazeMap[ny][nx]===1) { SFX.bad(); return; } // Muur
+        
+        // Clear old
+        document.getElementById(`mc_${activeMazePos.x}_${activeMazePos.y}`).innerText = '';
+        activeMazePos = {x:nx, y:ny};
+        renderMazePlayer();
+        
+        if(window.mazeMap[ny][nx]===3) triggerWin();
+    };
+
+    function renderMazePlayer() {
+        const c = document.getElementById(`mc_${activeMazePos.x}_${activeMazePos.y}`);
+        c.innerText = '🕷️';
+    }
+
+    // --- GAME 5: VANGEN (Meer vijanden) ---
     function initCatcher(canvas) {
         const basket = document.createElement('div');
-        basket.className = 'basket';
-        basket.innerText = '🕸️'; // Mandje is een web
-        basket.style.left = '50%';
+        basket.innerText = '🕸️'; basket.className = 'target'; 
+        basket.style.fontSize = '80px'; basket.style.bottom = '10px';
         canvas.appendChild(basket);
 
-        // Move logic
         canvas.onpointermove = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            // Clamp
-            if(x < 0) x = 0;
-            if(x > rect.width) x = rect.width;
-            basket.style.left = (x - 20) + 'px'; // Center
-        };
+            const r = canvas.getBoundingClientRect();
+            let x = e.clientX - r.left;
+            if(x<0) x=0; if(x>r.width) x=r.width;
+            basket.style.left = (x-40)+'px';
+        }
 
         function drop() {
             if(!isGameRunning) return;
             const item = document.createElement('div');
-            item.className = 'falling-item';
-            const isGood = Math.random() > 0.3;
-            item.innerText = isGood ? '🩳' : '🕷️'; // Zwembroek vs Spin
-            item.style.left = Math.random() * 90 + '%';
-            item.style.top = '-50px';
+            // 40% kans op slechterik
+            const isBad = Math.random() > 0.6;
+            item.innerText = isBad ? '🕷️' : '🩳';
+            item.className = 'target'; item.style.fontSize = '50px';
+            item.style.top = '-50px'; item.style.left = Math.random() * 90 + '%';
             canvas.appendChild(item);
 
             let pos = -50;
-            const fallInt = setInterval(() => {
-                if(!isGameRunning) { clearInterval(fallInt); return; }
-                pos += 3;
-                item.style.top = pos + 'px';
+            const fall = setInterval(() => {
+                if(!isGameRunning) { clearInterval(fall); return; }
+                pos += 4; item.style.top = pos + 'px';
                 
-                // Collision
-                const bRect = basket.getBoundingClientRect();
-                const iRect = item.getBoundingClientRect();
-                
-                // Simple overlap
-                if(pos > canvas.clientHeight - 80 && pos < canvas.clientHeight - 20) {
-                     const bX = parseFloat(basket.style.left);
-                     const iX = parseFloat(item.style.left) / 100 * canvas.clientWidth;
-                     
-                     if(Math.abs(bX - iX) < 60) {
-                         // Catch
-                         item.remove();
-                         clearInterval(fallInt);
-                         if(isGood) {
-                             score++;
-                             SFX.tick();
-                             updateHUD();
-                             if(score >= TOTAL_GOAL) triggerWin();
-                         } else {
-                             SFX.hit();
-                             score = Math.max(0, score - 1); // Straf
-                             updateHUD();
-                         }
-                     }
+                if(pos > canvas.clientHeight - 80) {
+                    const bx = parseFloat(basket.style.left);
+                    const ix = parseFloat(item.style.left)/100 * canvas.clientWidth;
+                    if(Math.abs(bx-ix) < 60) {
+                        item.remove(); clearInterval(fall);
+                        if(isBad) punish();
+                        else {
+                            SFX.tick(); score++; updateHUD();
+                            if(score >= TOTAL_GOAL) triggerWin();
+                        }
+                    }
                 }
-
-                if(pos > canvas.clientHeight) {
-                    item.remove();
-                    clearInterval(fallInt);
-                }
+                if(pos > canvas.clientHeight) { item.remove(); clearInterval(fall); }
             }, 20);
-
-            setTimeout(drop, 1000);
+            setTimeout(drop, 600); // Sneller
         }
         drop();
     }
 
-    // 6. MEMORY (6 paren)
+    // --- GAME 6: MEMORY (Fix + 6 paren) ---
     function initMemory(canvas) {
-        const grid = document.createElement('div');
-        grid.className = 'mem-grid';
-        canvas.appendChild(grid);
-
+        canvas.innerHTML = '<div class="mem-grid" id="memGrid"></div>';
+        const grid = document.getElementById('memGrid');
         const icons = ['🕷️','🕸️','👺','🦸','🏙️','⚡'];
         let deck = [...icons, ...icons].sort(()=>Math.random()-0.5);
-        let first = null; let lock = false; let matches = 0;
+        let first=null, lock=false;
 
-        deck.forEach(icon => {
-            const card = document.createElement('div');
-            card.className = 'mem-card';
-            card.dataset.val = icon;
-            card.onclick = () => {
-                if(lock || card === first || card.classList.contains('matched')) return;
-                SFX.jump();
-                card.classList.add('flipped');
-                card.innerText = icon;
-
-                if(!first) { first = card; }
+        deck.forEach(i => {
+            const c = document.createElement('div');
+            c.className = 'mem-card';
+            c.dataset.v = i;
+            c.onclick = () => {
+                if(lock || c===first || c.classList.contains('matched')) return;
+                c.classList.add('flipped'); c.innerText = i;
+                if(!first) first = c;
                 else {
                     lock = true;
-                    if(first.dataset.val === card.dataset.val) {
-                        setTimeout(() => {
-                            SFX.tick();
-                            first.classList.add('matched'); card.classList.add('matched');
-                            matches++;
-                            score = matches; // Score = matches here
-                            updateHUD();
-                            first = null; lock = false;
-                            if(matches === 6) triggerWin();
-                        }, 500);
+                    if(first.dataset.v === i) {
+                        SFX.tick();
+                        first.classList.add('matched'); c.classList.add('matched');
+                        score++; updateHUD();
+                        first=null; lock=false;
+                        if(score===6) triggerWin();
                     } else {
-                        setTimeout(() => {
-                            first.classList.remove('flipped'); card.classList.remove('flipped');
-                            first.innerText = ''; card.innerText = '';
-                            first = null; lock = false;
-                        }, 1000);
+                        setTimeout(()=>{
+                            first.classList.remove('flipped'); c.classList.remove('flipped');
+                            first.innerText=''; c.innerText='';
+                            first=null; lock=false;
+                        }, 800);
                     }
                 }
             };
-            grid.appendChild(card);
+            grid.appendChild(c);
         });
     }
 
     // --- UTILS ---
     function spawnConfetti() {
-        const colors = ['#f00', '#00f', '#ff0', '#fff'];
-        for(let i=0; i<50; i++) {
-            const c = document.createElement('div');
-            c.className = 'confetti';
-            c.style.background = colors[Math.floor(Math.random()*colors.length)];
-            c.style.left = '50%'; c.style.top = '50%';
-            document.body.appendChild(c);
-            
-            const destX = (Math.random() - 0.5) * window.innerWidth;
-            const destY = (Math.random() - 0.5) * window.innerHeight;
-            
-            c.animate([
-                { transform: 'translate(0,0)' },
-                { transform: `translate(${destX}px, ${destY}px)`, opacity: 0 }
-            ], { duration: 1500, easing: 'ease-out' }).onfinish = () => c.remove();
+        const c = ['#f00','#00f','#ff0'];
+        for(let i=0;i<60;i++){
+            const p = document.createElement('div');
+            p.className='confetti'; p.style.background=c[Math.floor(Math.random()*3)];
+            p.style.left='50%'; p.style.top='50%';
+            document.body.appendChild(p);
+            const x = (Math.random()-0.5)*window.innerWidth;
+            const y = (Math.random()-0.5)*window.innerHeight;
+            p.animate([{transform:'translate(0,0)'},{transform:`translate(${x}px,${y}px)`,opacity:0}],{duration:1500}).onfinish=()=>p.remove();
         }
     }
 
-    // Boot
     init();
-
 </script>
 </body>
 </html>
